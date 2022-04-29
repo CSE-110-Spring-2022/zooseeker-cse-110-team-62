@@ -28,7 +28,7 @@ public class AnimalItem {
 
     @Override
     public String toString() {
-        return "AnimalItem{" +
+        return "{" +
                 "id='" + id + '\'' +
                 ", kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
