@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // search activity
         Intent intent = new Intent(this, SearchPage.class);
         startActivity(intent);
     }
