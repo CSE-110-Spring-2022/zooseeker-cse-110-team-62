@@ -15,7 +15,7 @@ import org.json.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchPage extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
     private ArrayList<String> animalNames = new ArrayList<String>();
 
     @Override

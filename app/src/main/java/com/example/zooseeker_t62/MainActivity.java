@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // search activity
-        Intent intent = new Intent(this, SearchPage.class);
+        Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
 }

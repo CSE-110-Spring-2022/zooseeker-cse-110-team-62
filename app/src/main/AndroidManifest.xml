@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zooseeker_T62">
         <activity
-            android:name=".SearchPage"
+            android:name=".SearchActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
