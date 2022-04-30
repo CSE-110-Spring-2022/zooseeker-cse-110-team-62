@@ -10,7 +10,7 @@
         android:id="@+id/search_bar"
         android:layout_width="348dp"
         android:layout_height="44dp"
-        android:hint="Search an animal..."
+        android:hint="Search for an animal..."
         android:text=""
 
         app:layout_constraintBottom_toBottomOf="parent"
