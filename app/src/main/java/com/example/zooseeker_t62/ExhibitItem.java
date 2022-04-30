@@ -15,26 +15,28 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Entity(tableName = "exhibit_list_items")
 public class ExhibitItem {
 
-    @PrimaryKey(autoGenerate = true)
-    public long id;
+    @PrimaryKey(autoGenerate = false)
+    public String id;
 
     @NonNull
-    public String text;
-    public boolean completed;
-    public int order;
+    public String kind;
+    public String name;
+    public String[] tags;
 
     @Override
     public String toString() {
         return "ExhibitItem{" +
-                "text='" + text + '\'' +
-                ", completed=" + completed +
-                ", order=" + order +
+                "id='" + id + '\'' +
+                ", kind=" + kind +
+                ", name=" + name +
+                ", tags=" + Arrays.toString(tags) +
                 '}';
     }
 
