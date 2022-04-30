@@ -40,10 +40,11 @@ public class ExhibitItem {
                 '}';
     }
 
-    ExhibitItem(String text, boolean completed, int order) {
-        this.text = text;
-        this.completed = completed;
-        this.order = order;
+    ExhibitItem(String id, String kind, String name, String[] tags) {
+        this.id = id;
+        this.kind = kind;
+        this.name = name;
+        this.tags = tags;
     }
 
     public static List<ExhibitItem> loadJSON(Context context, String path) {
