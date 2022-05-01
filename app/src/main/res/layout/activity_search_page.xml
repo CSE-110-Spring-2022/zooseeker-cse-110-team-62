@@ -6,14 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".SearchActivity">
 
+
+    <Button
+        android:id="@+id/plan_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onLaunchExhibitListClick"
+        android:text="Plan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
+
     <AutoCompleteTextView
         android:id="@+id/search_bar"
         android:layout_width="348dp"
-        android:layout_height="44dp"
+        android:layout_height="48dp"
+        android:background="#F5F5F5"
         android:hint="Search for an animal . . ."
         android:text=""
-        android:background="#F5F5F5"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
