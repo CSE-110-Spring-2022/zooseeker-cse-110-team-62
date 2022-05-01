@@ -42,39 +42,14 @@ public class ExhibitActivityTest {
                 .build();
         ExhibitDatabase.injectTestDatabase(testDb);
 
-        List<ExhibitItem> todos = ExhibitItem.loadJSON(context, "demo_todos.json");
+        List<ExhibitItem> exhibits = ExhibitItem.loadJSON(context, "sample_node_info.json");
         exhibitItemDao = testDb.exhibitItemDao();
-        exhibitItemDao.insertAll(todos);
+        exhibitItemDao.insertAll(exhibits);
     }
 
+    /*
     @Test
-    public void testEditTodoText() {
-        String newText = "Ensure all tests pass";
-        ActivityScenario<ExhibitActivity> scenario = ActivityScenario.launch(ExhibitActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
-
-        scenario.onActivity(activity -> {
-            RecyclerView recyclerView = activity.recyclerView;
-            RecyclerView.ViewHolder firstVH = recyclerView.findViewHolderForAdapterPosition(0);
-            assertNotNull(firstVH);
-            long id = firstVH.getItemId();
-
-            EditText todoText = firstVH.itemView.findViewById(R.id.exhibit_item_text);
-            todoText.requestFocus();
-            todoText.setText("Ensure all tests pass");
-            todoText.clearFocus();
-
-            ExhibitItem editedItem = exhibitItemDao.get(id);
-            assertEquals(newText, editedItem.text);
-        });
-    }
-
-    @Test
-    public void testAddNewTodo() {
-        String newText = "Ensure all tests pass";
-
+    public void testAddNewExhibit() {
         ActivityScenario<ExhibitActivity> scenario = ActivityScenario.launch(ExhibitActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
         scenario.moveToState(Lifecycle.State.STARTED);
@@ -94,9 +69,10 @@ public class ExhibitActivityTest {
             assertEquals(newText, afterExhibit.get(afterExhibit.size()-1).text);
         });
     }
+    */
 
     @Test
-    public void testDeleteTodo() {
+    public void testDeleteExhibit() {
         ActivityScenario<ExhibitActivity> scenario = ActivityScenario.launch(ExhibitActivity.class);
         scenario.moveToState(Lifecycle.State.CREATED);
         scenario.moveToState(Lifecycle.State.STARTED);
@@ -116,29 +92,8 @@ public class ExhibitActivityTest {
             List<ExhibitItem> afterExhibit = exhibitItemDao.getAll();
             assertEquals(beforeExhibit.size()-1, afterExhibit.size());
 
-            ExhibitItem editedItem = exhibitItemDao.get(id);
-            assertNull(editedItem);
+            ExhibitItem deletedExhibit = exhibitItemDao.get(id);
+            assertNull(deletedExhibit);
         });
     }
-
-    //@Test
-    /*public void testCheckOffTodo() {
-        ActivityScenario<ExhibitActivity> scenario = ActivityScenario.launch(ExhibitActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
-
-        scenario.onActivity(activity -> {
-            RecyclerView recyclerView = activity.recyclerView;
-            RecyclerView.ViewHolder firstVH = recyclerView.findViewHolderForAdapterPosition(0);
-            assertNotNull(firstVH);
-            long id = firstVH.getItemId();
-
-            CheckBox todoCheck = firstVH.itemView.findViewById(R.id.completed);
-            todoCheck.setChecked(false);
-
-            ExhibitItem checkedBox = exhibitItemDao.get(id);
-            assertEquals(true, checkedBox.completed);
-        });
-    }*/
 }
