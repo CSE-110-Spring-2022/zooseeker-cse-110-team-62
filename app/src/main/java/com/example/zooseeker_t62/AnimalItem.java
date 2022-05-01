@@ -22,7 +22,9 @@ import java.util.List;
 public class AnimalItem {
     public String id, kind, name;
     public String[] tags;
-
+    /**
+     * @description: Animal Item Constructor
+     */
     public AnimalItem(String id, String kind, String name, String[] tags){
         this.id = id;
         this.kind = kind;
