@@ -68,4 +68,11 @@ public class SearchActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    /**
+     * @description: Proper activity cleanup when destroyed
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
