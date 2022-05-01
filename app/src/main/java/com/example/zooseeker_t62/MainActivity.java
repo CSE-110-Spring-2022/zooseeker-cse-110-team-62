@@ -15,8 +15,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onLaunchExhibitListClick(View view) {
-        Intent intent = new Intent(this, ExhibitActivity.class);
-        startActivity(intent);
-    }
+
 }

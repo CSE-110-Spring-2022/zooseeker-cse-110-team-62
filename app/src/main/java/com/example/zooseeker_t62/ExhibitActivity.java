@@ -46,9 +46,9 @@ public class ExhibitActivity extends AppCompatActivity {
     }
 
     void onAddTodoClicked(View view) {
-        String text = newTodoText.getText().toString();
+        String name = newTodoText.getText().toString();
         newTodoText.setText("");
-        viewModel.createExhibit(text);
+        viewModel.createExhibit("elephant_odyssey", name, new String[]{"elephant", "mammal", "africa"});
     }
 
     @Override

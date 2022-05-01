@@ -20,13 +20,13 @@ public interface ExhibitItemDao {
     @Query("SELECT * FROM `exhibit_list_items` WHERE `id`=:id")
     ExhibitItem get(long id);
 
-    @Query("SELECT * FROM `exhibit_list_items` ORDER BY `order`")
+    @Query("SELECT * FROM `exhibit_list_items` ORDER BY `name`")
     List<ExhibitItem> getAll();
 
-    @Query("SELECT * FROM `exhibit_list_items` ORDER BY `order`")
+    @Query("SELECT * FROM `exhibit_list_items` ORDER BY `name`")
     LiveData<List<ExhibitItem>> getAllLive();
 
-    @Query("SELECT `order` + 1 FROM `exhibit_list_items` ORDER BY `order` DESC LIMIT 1")
+    @Query("SELECT `name` + 1 FROM `exhibit_list_items` ORDER BY `name` DESC LIMIT 1")
     int getOrderForAppend();
 
     @Update

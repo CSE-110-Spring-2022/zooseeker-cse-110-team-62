@@ -1,10 +1,8 @@
 package com.example.zooseeker_t62;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -54,7 +52,12 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         return exhibitItems.size();
     }
 
-    public long getItemId(int position) { return exhibitItems.get(position).id; }
+    public long getItemId(int position) {
+        //return exhibitItems.get(position).id;
+        return position;
+    }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -82,7 +85,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         public ExhibitItem getTodoItem() {return todoItem;}
         public void setTodoItem(ExhibitItem todoItem) {
             this.todoItem = todoItem;
-            this.textView.setText(todoItem.text);
+            this.textView.setText(todoItem.name);
         }
     }
 }

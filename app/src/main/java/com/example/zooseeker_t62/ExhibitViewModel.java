@@ -40,9 +40,9 @@ public class ExhibitViewModel extends AndroidViewModel {
         exhibitItemDao.update(exhibitItem);
     }
 
-    public void createExhibit(String text) {
-        int endOfListOrder = exhibitItemDao.getOrderForAppend();
-        ExhibitItem newItem = new ExhibitItem(text, false, endOfListOrder);
+    public void createExhibit(String id, String name, String[] tags) {
+        //int endOfListOrder = exhibitItemDao.getOrderForAppend();
+        ExhibitItem newItem = new ExhibitItem(id, "exhibit", name, tags);
         exhibitItemDao.insert(newItem);
     }
 }
