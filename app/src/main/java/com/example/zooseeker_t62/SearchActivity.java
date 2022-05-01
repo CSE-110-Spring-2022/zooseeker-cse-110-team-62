@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ public class SearchActivity extends AppCompatActivity {
     private ArrayList<String> activeAnimalNames = new ArrayList<String>();
     /**
      * @description: creates adapter which holds activeAnimalNames based on our search bar query
+     * Also holds onClick Listener when textView item is clicked
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,16 @@ public class SearchActivity extends AppCompatActivity {
 
         textView.setAdapter(adapter);
         textView.setThreshold(1);
+
+
+        // TODO, leaving for Andrew & Sumu, this listener gives you access to what is clicked
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String) parent.getItemAtPosition(position);
+                Log.d("clickEvent", selection);
+            }
+        });
 
 
         List<AnimalItem> animals = AnimalItem.loadJSON(this, "sample_node_info.json");
