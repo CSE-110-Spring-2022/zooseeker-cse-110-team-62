@@ -51,6 +51,7 @@ public class SearchActivity extends AppCompatActivity {
      * @description: iterates through tags, updates activeAnimalNames based on if current tag
      * is already in our activeAnimalNames List
      */
+    //test
     void updateActiveAnimalNames(List<AnimalItem> animals) {
         try {
             JSONArray animalsArr = new JSONArray(animals.toString());
