@@ -19,18 +19,20 @@ public class ExhibitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exhibit_list);
 
+        recyclerView = findViewById(R.id.exhibit_items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
 
         ExhibitAdapter adapter = new ExhibitAdapter();
         adapter.setHasStableIds(true);
         adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
-        viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
 
-        recyclerView = findViewById(R.id.exhibit_items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+
+        viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
 
     }
 
