@@ -35,6 +35,7 @@ public class SearchActivity extends AppCompatActivity {
         textView.setThreshold(1);
 
         // TODO, leaving for Andrew & Sumu, this listener gives you access to what is clicked
+        // andrew testing github
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
