@@ -32,17 +32,14 @@ public class ExhibitViewModel extends AndroidViewModel {
     }
 
 
-    public void deleteTodo(ExhibitItem exhibitItem) {
+    public void deleteExhibit(ExhibitItem exhibitItem) {
         exhibitItemDao.delete(exhibitItem);
     }
 
-    public void updateText(ExhibitItem exhibitItem) {
-        exhibitItemDao.update(exhibitItem);
-    }
 
-    public void createExhibit(String id, String name, String[] tags) {
+    public void createExhibit(String id, String kind, String name, String[] tags) {
         //int endOfListOrder = exhibitItemDao.getOrderForAppend();
-        ExhibitItem newItem = new ExhibitItem(id, "exhibit", name, tags);
+        ExhibitItem newItem = new ExhibitItem(id, kind, name, tags);
         exhibitItemDao.insert(newItem);
     }
 }

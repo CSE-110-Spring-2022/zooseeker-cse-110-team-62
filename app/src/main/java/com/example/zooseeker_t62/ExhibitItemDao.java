@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface ExhibitItemDao {
     @Insert
-    String insert(ExhibitItem todoListItem);
+    long insert(ExhibitItem todoListItem);
 
     @Insert
     List<Long> insertAll(List<ExhibitItem> todoListItem);
@@ -28,9 +28,6 @@ public interface ExhibitItemDao {
 
     @Query("SELECT `name` + 1 FROM `exhibit_list_items` ORDER BY `name` DESC LIMIT 1")
     int getOrderForAppend();
-
-    @Update
-    int update(ExhibitItem todoListItem);
 
     @Delete
     int delete(ExhibitItem todoListItem);

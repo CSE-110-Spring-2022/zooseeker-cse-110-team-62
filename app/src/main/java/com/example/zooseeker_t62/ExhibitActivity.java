@@ -15,8 +15,6 @@ public class ExhibitActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
     public ExhibitViewModel viewModel;
 
-    private EditText newTodoText;
-    private Button addTodoButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +26,7 @@ public class ExhibitActivity extends AppCompatActivity {
 
         ExhibitAdapter adapter = new ExhibitAdapter();
         adapter.setHasStableIds(true);
-        adapter.setOnTextEditedHandler(viewModel::updateText);
-        adapter.setOnDeleteButtonClickedHandler(viewModel::deleteTodo);
+        adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
         viewModel.getExhibitItems().observe(this, adapter::setTodoListItems);
 
         recyclerView = findViewById(R.id.todo_items);
@@ -37,19 +34,8 @@ public class ExhibitActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
 
-
-        this.newTodoText = this.findViewById(R.id.new_todo_text);
-        this.addTodoButton = this.findViewById(R.id.add_todo_btn);
-
-        addTodoButton.setOnClickListener(this::onAddTodoClicked);
-
     }
 
-    void onAddTodoClicked(View view) {
-        String name = newTodoText.getText().toString();
-        newTodoText.setText("");
-        viewModel.createExhibit("elephant_odyssey", name, new String[]{"elephant", "mammal", "africa"});
-    }
 
     @Override
     protected void onDestroy() {

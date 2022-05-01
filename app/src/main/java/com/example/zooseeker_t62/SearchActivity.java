@@ -1,7 +1,8 @@
+
+
 package com.example.zooseeker_t62;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +17,12 @@ import com.google.gson.JsonParser;
 
 import org.json.*;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
     private ArrayList<String> activeAnimalNames = new ArrayList<String>();
+    public ExhibitViewModel viewModel;
     /**
      * @description: creates adapter which holds activeAnimalNames based on our search bar query
      * Also holds onClick Listener when textView item is clicked
@@ -38,18 +39,18 @@ public class SearchActivity extends AppCompatActivity {
         textView.setThreshold(1);
 
 
+
+        List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_node_info.json");
+
         // TODO, leaving for Andrew & Sumu, this listener gives you access to what is clicked
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
                 Log.d("clickEvent", selection);
+                onAddExhibitClicked(animals, selection);
             }
         });
-
-
-        List<AnimalItem> animals = AnimalItem.loadJSON(this, "sample_node_info.json");
-
 
         updateActiveAnimalNames(animals);
     }
@@ -57,8 +58,7 @@ public class SearchActivity extends AppCompatActivity {
      * @description: iterates through tags, updates activeAnimalNames based on if current tag
      * is already in our activeAnimalNames List
      */
-
-    void updateActiveAnimalNames(List<AnimalItem> animals) {
+    void updateActiveAnimalNames(List<ExhibitItem> animals) {
         try {
             JSONArray animalsArr = new JSONArray(animals.toString());
             for (int i = 0; i < animalsArr.length(); i++) {
@@ -76,9 +76,36 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    public void onAddExhibitClicked(List<ExhibitItem> animals, String tag) {
+        try {
+            JSONArray animalsArr = new JSONArray(animals.toString());
+            for (int i = 0; i < animalsArr.length(); i++) {
+                JSONObject currNode = animalsArr.getJSONObject(i);
+                JSONArray tags = currNode.getJSONArray("tags");
+                for(int j = 0 ; j < tags.length() ; j++){
+                    String currTag = tags.getString(j);
+                    if (currTag.equals(tag)) {
+                        String id = currNode.getJSONObject("id").toString();
+                        String kind = currNode.getJSONObject("kind").toString();
+                        String name = currNode.getJSONObject("name").toString();
+                        String[] stringTags = new String[tags.length()];
+                        for (int k = 0; k < stringTags.length; k++) {
+                            stringTags[k] = tags.getString(k);
+                        }
+                        viewModel.createExhibit(id, kind, name, stringTags);
+                        Log.d("onAddExhibitClicked", "created exhibit " + id);
+                        break;
+                    }
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void onLaunchExhibitListClick(View view) {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
     }
-
 }

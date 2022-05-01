@@ -23,40 +23,45 @@ import java.util.List;
 @Entity(tableName = "exhibit_list_items")
 public class ExhibitItem {
 
-    @PrimaryKey
-    @NonNull
-    public String id;
+    @PrimaryKey(autoGenerate = true)
+    public long long_id;
 
     @NonNull
-    public String kind;
-    public String name;
+    public String id, kind, name;
+
+    @NonNull
     public String[] tags;
 
-    @Override
-    public String toString() {
-        return "ExhibitItem{" +
-                "id='" + id + '\'' +
-                ", kind=" + kind +
-                ", name=" + name +
-                ", tags=" + Arrays.toString(tags) +
-                '}';
-    }
-
-    ExhibitItem(String id, String kind, String name, String[] tags) {
+    public ExhibitItem(String id, String kind, String name, String[] tags){
         this.id = id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
     }
 
-    public static List<ExhibitItem> loadJSON(Context context, String path) {
+    @Override
+    public String toString() {
+        return "{" +
+                "id='" + id + '\'' +
+                ", kind='" + kind + '\'' +
+                ", name='" + name + '\'' +
+                ", tags=" + Arrays.toString(tags) +
+                '}';
+    }
+
+    /**
+     * @description: loads JSON from path and returns object
+     */
+    public static List<ExhibitItem> loadJSON(Context context, String path){
         try {
             InputStream input = context.getAssets().open(path);
             Reader reader = new InputStreamReader(input);
+
             Gson gson = new Gson();
             Type type = new TypeToken<List<ExhibitItem>>(){}.getType();
-            return gson.fromJson(reader, type);
 
+            List<ExhibitItem> animals = gson.fromJson(reader, type);
+            return animals;
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();

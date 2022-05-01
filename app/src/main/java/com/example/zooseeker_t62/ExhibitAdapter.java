@@ -44,7 +44,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setTodoItem(exhibitItems.get(position));
+        holder.setExhibitItem(exhibitItems.get(position));
     }
 
     @Override
@@ -53,8 +53,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     }
 
     public long getItemId(int position) {
-        //return exhibitItems.get(position).id;
-        return position;
+        return exhibitItems.get(position).long_id;
     }
 
 
@@ -62,7 +61,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textView;
-        private ExhibitItem todoItem;
+        private ExhibitItem exhibitItem;
         private final TextView deleteButton;
 
         public ViewHolder(@NonNull View itemView) {
@@ -72,20 +71,20 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
 
             this.textView.setOnClickListener(view -> {
                 if (onTextClicked == null) return;
-                onTextClicked.accept(todoItem);
+                onTextClicked.accept(exhibitItem);
             });
 
 
             this.deleteButton.setOnClickListener(view -> {
                 if (onDeleteButtonClicked == null) return;
-                onDeleteButtonClicked.accept(todoItem);
+                onDeleteButtonClicked.accept(exhibitItem);
             });
         }
 
-        public ExhibitItem getTodoItem() {return todoItem;}
-        public void setTodoItem(ExhibitItem todoItem) {
-            this.todoItem = todoItem;
-            this.textView.setText(todoItem.name);
+        public ExhibitItem getExhibitItem() {return exhibitItem;}
+        public void setExhibitItem(ExhibitItem exhibitItem) {
+            this.exhibitItem = exhibitItem;
+            this.textView.setText(exhibitItem.name);
         }
     }
 }
