@@ -2,15 +2,19 @@ package com.example.zooseeker_t62;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.JsonParser;
+
+import org.json.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +35,9 @@ public class SearchActivity extends AppCompatActivity {
         textView.setAdapter(adapter);
         textView.setThreshold(1);
 
-        List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_node_info.json");
+
+        List<AnimalItem> animals = AnimalItem.loadJSON(this, "sample_node_info.json");
+
 
         updateActiveAnimalNames(animals);
     }
@@ -39,7 +45,8 @@ public class SearchActivity extends AppCompatActivity {
      * @description: iterates through tags, updates activeAnimalNames based on if current tag
      * is already in our activeAnimalNames List
      */
-    void updateActiveAnimalNames(List<ExhibitItem> animals) {
+
+    void updateActiveAnimalNames(List<AnimalItem> animals) {
         try {
             JSONArray animalsArr = new JSONArray(animals.toString());
             for (int i = 0; i < animalsArr.length(); i++) {
@@ -61,4 +68,5 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
     }
+
 }

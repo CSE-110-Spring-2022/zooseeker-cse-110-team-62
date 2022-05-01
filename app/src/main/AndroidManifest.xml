@@ -11,6 +11,9 @@
         android:theme="@style/Theme.Zooseeker_T62">
         <activity
             android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,11 +24,7 @@
 
         <activity
             android:name=".ExhibitActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-
+            android:exported="false" >
         </activity>
     </application>
 

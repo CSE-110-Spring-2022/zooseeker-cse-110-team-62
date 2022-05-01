@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".SearchActivity">
 
+
     <Button
         android:id="@+id/plan_btn"
         android:layout_width="wrap_content"
@@ -26,7 +27,6 @@
         android:background="#F5F5F5"
         android:hint="Search for an animal . . ."
         android:text=""
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"

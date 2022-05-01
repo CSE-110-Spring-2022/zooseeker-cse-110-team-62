@@ -7,11 +7,16 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-
+    /**
+     * @description: Entry point of our app, links to SearchActivity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
 
 
