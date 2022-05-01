@@ -18,7 +18,7 @@ public interface ExhibitItemDao {
     List<Long> insertAll(List<ExhibitItem> todoListItem);
 
     @Query("SELECT * FROM `exhibit_list_items` WHERE `id`=:id")
-    ExhibitItem get(String id);
+    ExhibitItem get(long id);
 
     @Query("SELECT * FROM `exhibit_list_items` ORDER BY `id`")
     List<ExhibitItem> getAll();
