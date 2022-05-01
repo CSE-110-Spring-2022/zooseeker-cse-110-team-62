@@ -68,11 +68,4 @@ public class SearchActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
-
-//    void onTextViewClicked(View view) {
-//        Log.d("clicked", "User as")
-//    }
-
 }
