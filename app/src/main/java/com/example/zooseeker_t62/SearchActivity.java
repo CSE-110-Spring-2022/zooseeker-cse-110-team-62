@@ -3,6 +3,7 @@
 package com.example.zooseeker_t62;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +32,9 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_page);
+
+        viewModel = new ViewModelProvider(this)
+                .get(ExhibitViewModel.class);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, activeAnimalNames);
         AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.search_bar);
@@ -85,13 +89,20 @@ public class SearchActivity extends AppCompatActivity {
                 for(int j = 0 ; j < tags.length() ; j++){
                     String currTag = tags.getString(j);
                     if (currTag.equals(tag)) {
-                        String id = currNode.getJSONObject("id").toString();
-                        String kind = currNode.getJSONObject("kind").toString();
-                        String name = currNode.getJSONObject("name").toString();
+                        String id = currNode.getString("id");
+                        String kind = currNode.getString("kind");
+                        String name = currNode.getString("name");
                         String[] stringTags = new String[tags.length()];
+
+                        Log.d("onAddExhibitClicked", "stringTags.length: " + stringTags.length);
                         for (int k = 0; k < stringTags.length; k++) {
                             stringTags[k] = tags.getString(k);
                         }
+
+                        Log.d("onAddExhibitClicked", "id: " + id);
+                        Log.d("onAddExhibitClicked", "kind: " + kind);
+                        Log.d("onAddExhibitClicked", "name: " + name);
+                        Log.d("onAddExhibitClicked", "stringTags: " + stringTags.toString());
                         viewModel.createExhibit(id, kind, name, stringTags);
                         Log.d("onAddExhibitClicked", "created exhibit " + id);
                         break;

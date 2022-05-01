@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 @Database(entities = {ExhibitItem.class},
-        version = 2)
+        version = 3)
 @TypeConverters({Converters.class})
 public abstract class ExhibitDatabase extends RoomDatabase {
 

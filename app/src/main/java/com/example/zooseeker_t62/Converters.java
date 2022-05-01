@@ -17,8 +17,6 @@ public class Converters {
     public String[] toArray(String concatenatedStrings) {
         ArrayList<String> myStrings = new ArrayList<>();
 
-        for(String s : concatenatedStrings.split(",")) { myStrings.add(s); }
-
-        return (String[]) myStrings.toArray();
+        return concatenatedStrings.split(",");
     }
 }

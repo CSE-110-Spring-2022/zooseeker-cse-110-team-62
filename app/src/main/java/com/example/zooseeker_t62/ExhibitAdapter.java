@@ -17,9 +17,9 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     private Consumer<ExhibitItem> onTextClicked;
     private Consumer<ExhibitItem> onDeleteButtonClicked;
 
-    public void setTodoListItems(List<ExhibitItem> newTodoItems) {
+    public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
-        this.exhibitItems = newTodoItems;
+        this.exhibitItems = newExhibitItems;
     }
 
 

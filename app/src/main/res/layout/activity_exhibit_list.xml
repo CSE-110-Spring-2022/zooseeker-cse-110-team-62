@@ -7,7 +7,7 @@
     tools:context=".ExhibitActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/todo_items"
+        android:id="@+id/exhibit_items"
         android:layout_width="408dp"
         android:layout_height="642dp"
         android:layout_marginTop="88dp"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:onClick="onGoBackClicked"
         android:text="Home"
-        app:layout_constraintBottom_toTopOf="@+id/todo_items"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:text="Plan"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/todo_items"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:text="0"
-        app:layout_constraintBottom_toTopOf="@+id/todo_items"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.809"
         app:layout_constraintStart_toEndOf="@+id/plan_text"
@@ -58,7 +58,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:text="Exhibits:"
-        app:layout_constraintBottom_toTopOf="@+id/todo_items"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toStartOf="@+id/exhibits_length_text"
         app:layout_constraintHorizontal_bias="0.985"
         app:layout_constraintStart_toEndOf="@+id/home_btn"

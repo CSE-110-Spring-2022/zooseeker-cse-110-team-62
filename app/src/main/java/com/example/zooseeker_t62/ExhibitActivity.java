@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 public class ExhibitActivity extends AppCompatActivity {
 
@@ -27,9 +25,9 @@ public class ExhibitActivity extends AppCompatActivity {
         ExhibitAdapter adapter = new ExhibitAdapter();
         adapter.setHasStableIds(true);
         adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
-        viewModel.getExhibitItems().observe(this, adapter::setTodoListItems);
+        viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
 
-        recyclerView = findViewById(R.id.todo_items);
+        recyclerView = findViewById(R.id.exhibit_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 

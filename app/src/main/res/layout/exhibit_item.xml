@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/exhibit_item_text"
         android:layout_width="280dp"
-        android:layout_height="31dp"
+        android:layout_height="48dp"
         android:layout_marginStart="40dp"
         android:inputType="text"
         android:maxLines="1"

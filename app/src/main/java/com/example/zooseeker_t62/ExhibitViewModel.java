@@ -2,6 +2,7 @@ package com.example.zooseeker_t62;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -29,6 +30,14 @@ public class ExhibitViewModel extends AndroidViewModel {
 
     private void loadUsers() {
         exhibitItems = exhibitItemDao.getAllLive();
+        List<ExhibitItem> items = exhibitItemDao.getAll();
+        if (items != null) {
+            for (ExhibitItem item : items) {
+                Log.d("ExhibitViewModel.java", item.toString());
+            }
+
+        }
+
     }
 
 
