@@ -21,6 +21,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;
         Log.d("ExhibitAdapter.java, exhibitItems: ", exhibitItems.toString());
+        notifyDataSetChanged();
     }
 
 
