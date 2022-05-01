@@ -119,6 +119,7 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
 
+    }
     /**
      * @description: Proper activity cleanup when destroyed
      */
