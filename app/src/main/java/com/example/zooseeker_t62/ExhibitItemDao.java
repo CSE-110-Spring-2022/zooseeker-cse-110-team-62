@@ -12,13 +12,13 @@ import java.util.List;
 @Dao
 public interface ExhibitItemDao {
     @Insert
-    long insert(ExhibitItem todoListItem);
+    String insert(ExhibitItem todoListItem);
 
     @Insert
     List<Long> insertAll(List<ExhibitItem> todoListItem);
 
     @Query("SELECT * FROM `exhibit_list_items` WHERE `id`=:id")
-    ExhibitItem get(long id);
+    ExhibitItem get(String id);
 
     @Query("SELECT * FROM `exhibit_list_items` ORDER BY `name`")
     List<ExhibitItem> getAll();
