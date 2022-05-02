@@ -12,10 +12,10 @@ import java.util.List;
 @Dao
 public interface ExhibitItemDao {
     @Insert
-    long insert(ExhibitItem todoListItem);
+    long insert(ExhibitItem exhibitItem);
 
     @Insert
-    List<Long> insertAll(List<ExhibitItem> todoListItem);
+    List<Long> insertAll(List<ExhibitItem> exhibitItem);
 
     @Query("SELECT * FROM `exhibit_list_items` WHERE `id`=:id")
     ExhibitItem get(long id);
@@ -30,5 +30,5 @@ public interface ExhibitItemDao {
     int getOrderForAppend();
 
     @Delete
-    int delete(ExhibitItem todoListItem);
+    int delete(ExhibitItem exhibitItem);
 }
