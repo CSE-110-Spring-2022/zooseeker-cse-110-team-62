@@ -13,7 +13,7 @@ import java.util.List;
 public class ExhibitViewModel extends AndroidViewModel {
     private LiveData<List<ExhibitItem>> exhibitItems;
     private final ExhibitItemDao exhibitItemDao;
-
+    // sample comment
     public ExhibitViewModel(@NonNull Application application) {
         super(application);
         Context context = getApplication().getApplicationContext();
