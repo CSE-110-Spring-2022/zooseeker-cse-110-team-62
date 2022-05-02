@@ -1,5 +1,10 @@
 package com.example.zooseeker_t62;
 
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -7,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -16,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.DataInteraction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
@@ -39,6 +46,7 @@ public class ExhibitActivityTest {
         Context context = ApplicationProvider.getApplicationContext();
         testDb = Room.inMemoryDatabaseBuilder(context, ExhibitDatabase.class)
                 .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
                 .build();
         ExhibitDatabase.injectTestDatabase(testDb);
 
@@ -47,29 +55,7 @@ public class ExhibitActivityTest {
         exhibitItemDao.insertAll(exhibits);
     }
 
-    /*
-    @Test
-    public void testAddNewExhibit() {
-        ActivityScenario<ExhibitActivity> scenario = ActivityScenario.launch(ExhibitActivity.class);
-        scenario.moveToState(Lifecycle.State.CREATED);
-        scenario.moveToState(Lifecycle.State.STARTED);
-        scenario.moveToState(Lifecycle.State.RESUMED);
 
-        scenario.onActivity(activity -> {
-            List<ExhibitItem> beforeExhibit = exhibitItemDao.getAll();
-
-            EditText newTodoText = activity.findViewById(R.id.new_todo_text);
-            Button addTodoButton = activity.findViewById(R.id.add_todo_btn);
-
-            newTodoText.setText(newText);
-            addTodoButton.performClick();
-
-            List<ExhibitItem> afterExhibit = exhibitItemDao.getAll();
-            assertEquals(beforeExhibit.size() + 1, afterExhibit.size());
-            assertEquals(newText, afterExhibit.get(afterExhibit.size()-1).text);
-        });
-    }
-    */
 
     @Test
     public void testDeleteExhibit() {
