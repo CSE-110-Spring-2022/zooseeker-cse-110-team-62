@@ -53,8 +53,6 @@ public class ExhibitDatabaseTest {
         assertNotEquals(id1, id2);
     }
 
-
-
     @Test
     public void testDelete() {
         ExhibitItem item = new ExhibitItem("Entrance", "not-exhibit", "entrance",
