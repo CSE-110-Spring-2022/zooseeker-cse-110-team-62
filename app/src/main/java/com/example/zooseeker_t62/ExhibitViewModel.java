@@ -28,6 +28,10 @@ public class ExhibitViewModel extends AndroidViewModel {
         return exhibitItems;
     }
 
+    public List<ExhibitItem> getList() {
+        return exhibitItemDao.getAll();
+    }
+
     private void loadUsers() {
         exhibitItems = exhibitItemDao.getAllLive();
         List<ExhibitItem> items = exhibitItemDao.getAll();
@@ -37,14 +41,11 @@ public class ExhibitViewModel extends AndroidViewModel {
             }
 
         }
-
     }
-
 
     public void deleteExhibit(ExhibitItem exhibitItem) {
         exhibitItemDao.delete(exhibitItem);
     }
-
 
     public void createExhibit(String id, String kind, String name, String[] tags) {
         //int endOfListOrder = exhibitItemDao.getOrderForAppend();

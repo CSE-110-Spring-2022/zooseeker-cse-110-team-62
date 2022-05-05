@@ -56,7 +56,6 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textView;

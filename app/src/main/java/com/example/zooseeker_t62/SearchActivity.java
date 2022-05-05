@@ -118,7 +118,6 @@ public class SearchActivity extends AppCompatActivity {
     public void onLaunchExhibitListClick(View view) {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
-
     }
     /**
      * @description: Proper activity cleanup when destroyed
@@ -126,5 +125,10 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public void onDirectionsClick(View view) {
+        Intent intent = new Intent(this, RouteDirectionsActivity.class);
+        startActivity(intent);
     }
 }
