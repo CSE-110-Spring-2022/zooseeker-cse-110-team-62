@@ -15,19 +15,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-@Database(entities = {ExhibitItem.class},
-        version = 3)
+/**
+ * @description: This class manages a database our other classes may interact with
+ */
+@Database(entities = {ExhibitItem.class}, version = 3)
 @TypeConverters({Converters.class})
 public abstract class ExhibitDatabase extends RoomDatabase {
-
-
-
     private static ExhibitDatabase singleton = null;
-
-
-
     public abstract ExhibitItemDao exhibitItemDao();
 
+    /**
+     * @description: Retrieve the data singleton for use
+     */
     public synchronized static ExhibitDatabase getSingleton(Context context) {
         if (singleton == null) {
             singleton = ExhibitDatabase.makeDatabase(context);
@@ -36,6 +35,9 @@ public abstract class ExhibitDatabase extends RoomDatabase {
         return singleton;
     }
 
+    /**
+     * @description: Reset the singleton to a mock database for testing purposes
+     */
     @VisibleForTesting
     public static void injectTestDatabase(ExhibitDatabase testDatabase) {
         if (singleton != null) {
@@ -44,6 +46,9 @@ public abstract class ExhibitDatabase extends RoomDatabase {
         singleton = testDatabase;
     }
 
+    /**
+     * @description: Create the database for use with the Room API
+     */
     private static ExhibitDatabase makeDatabase(Context context) {
         return Room.databaseBuilder(context, ExhibitDatabase.class, "todo_app.db")
                 .allowMainThreadQueries()
@@ -61,6 +66,4 @@ public abstract class ExhibitDatabase extends RoomDatabase {
                 })
                 .build();
     }
-
-
 }

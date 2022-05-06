@@ -9,6 +9,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * @description: The DAO for ZooSeeker
+ */
 @Dao
 public interface ExhibitItemDao {
     @Insert
