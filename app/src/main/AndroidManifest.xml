@@ -21,7 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".RouteDirectionsActivity"
+            android:exported="false" />
         <activity
             android:name=".ExhibitActivity"
             android:exported="false" >
