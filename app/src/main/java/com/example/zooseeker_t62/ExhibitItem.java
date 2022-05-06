@@ -20,9 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @description: Class that holds structure for node data in JSON
+ */
 @Entity(tableName = "exhibit_list_items")
 public class ExhibitItem {
-
     @PrimaryKey(autoGenerate = true)
     public long long_id;
 
@@ -32,6 +34,9 @@ public class ExhibitItem {
     @NonNull
     public String[] tags;
 
+    /**
+     * @description: The constructor
+     */
     public ExhibitItem(String id, String kind, String name, String[] tags){
         this.id = id;
         this.kind = kind;
@@ -39,6 +44,9 @@ public class ExhibitItem {
         this.tags = tags;
     }
 
+    /**
+     * @description: The String representation of the ExhibitItem
+     */
     @Override
     public String toString() {
         return "{" +

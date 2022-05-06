@@ -8,12 +8,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * @description: Class that manages the "Plan" list within our ZooSeeker app.
+ */
 public class ExhibitActivity extends AppCompatActivity {
-
     public RecyclerView recyclerView;
     public ExhibitViewModel viewModel;
 
-
+    /**
+     * @description: The onCreate lifecycle for ExhibitActivity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +32,21 @@ public class ExhibitActivity extends AppCompatActivity {
         ExhibitAdapter adapter = new ExhibitAdapter();
         adapter.setHasStableIds(true);
         adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
-
         recyclerView.setAdapter(adapter);
-
-
         viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
-
     }
 
-
+    /**
+     * @description: The onDestroy lifecycle of ExhibitActivity
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
+    /**
+     * @description: finish()ing the Activity when returning to the caller Activity
+     */
     public void onGoBackClicked(View view) {
         finish();
     }
