@@ -1,5 +1,3 @@
-
-
 package com.example.zooseeker_t62;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,11 +19,16 @@ import org.json.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @description: This class represents the Activity where our ZooSeeker has a search bar to
+ * find exhibits.
+ */
 public class SearchActivity extends AppCompatActivity {
     private ArrayList<String> activeAnimalNames = new ArrayList<String>();
     public ExhibitViewModel viewModel;
+
     /**
-     * @description: creates adapter which holds activeAnimalNames based on our search bar query
+     * @description: Creates adapter which holds activeAnimalNames based on our search bar query
      * Also holds onClick Listener when textView item is clicked
      */
     @Override
@@ -38,15 +41,12 @@ public class SearchActivity extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, activeAnimalNames);
         AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.search_bar);
-
         textView.setAdapter(adapter);
         textView.setThreshold(1);
 
-
-
         List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_node_info.json");
 
-        // TODO, leaving for Andrew & Sumu, this listener gives you access to what is clicked
+        // this listener gives you access to what is clicked
         textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
@@ -58,8 +58,9 @@ public class SearchActivity extends AppCompatActivity {
 
         updateActiveAnimalNames(animals);
     }
+
     /**
-     * @description: iterates through tags, updates activeAnimalNames based on if current tag
+     * @description: Iterates through tags, updates activeAnimalNames based on whether current tag
      * is already in our activeAnimalNames List
      */
     void updateActiveAnimalNames(List<ExhibitItem> animals) {
@@ -68,7 +69,7 @@ public class SearchActivity extends AppCompatActivity {
             for (int i = 0; i < animalsArr.length(); i++) {
                 JSONObject currNode = animalsArr.getJSONObject(i);
                 JSONArray tags = currNode.getJSONArray("tags");
-                for(int j = 0 ; j < tags.length() ; j++){
+                for(int j = 0 ; j < tags.length(); j++) {
                     String currTag = tags.getString(j);
                     if(!activeAnimalNames.contains(currTag)) {
                         activeAnimalNames.add(currTag);
@@ -80,13 +81,16 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @description: Behavior for when an exhibit is clicked and meant to be added
+     */
     public void onAddExhibitClicked(List<ExhibitItem> animals, String tag) {
         try {
             JSONArray animalsArr = new JSONArray(animals.toString());
             for (int i = 0; i < animalsArr.length(); i++) {
                 JSONObject currNode = animalsArr.getJSONObject(i);
                 JSONArray tags = currNode.getJSONArray("tags");
-                for(int j = 0 ; j < tags.length() ; j++){
+                for(int j = 0 ; j < tags.length(); j++) {
                     String currTag = tags.getString(j);
                     if (currTag.equals(tag)) {
                         String id = currNode.getString("id");
@@ -95,6 +99,7 @@ public class SearchActivity extends AppCompatActivity {
                         String[] stringTags = new String[tags.length()];
 
                         Log.d("onAddExhibitClicked", "stringTags.length: " + stringTags.length);
+
                         for (int k = 0; k < stringTags.length; k++) {
                             stringTags[k] = tags.getString(k);
                         }
@@ -103,32 +108,41 @@ public class SearchActivity extends AppCompatActivity {
                         Log.d("onAddExhibitClicked", "kind: " + kind);
                         Log.d("onAddExhibitClicked", "name: " + name);
                         Log.d("onAddExhibitClicked", "stringTags: " + stringTags.toString());
+
                         viewModel.createExhibit(id, kind, name, stringTags);
+
                         Log.d("onAddExhibitClicked", "created exhibit " + id);
+
                         break;
                     }
                 }
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * @description: Handles the opening of the new plan list Activity
+     */
     public void onLaunchExhibitListClick(View view) {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
     }
+
+    /**
+     * @description: Handles the opening of the new direction/route Activity
+     */
+    public void onDirectionsClick(View view) {
+        Intent intent = new Intent(this, RouteDirectionsActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * @description: Proper activity cleanup when destroyed
      */
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    public void onDirectionsClick(View view) {
-        Intent intent = new Intent(this, RouteDirectionsActivity.class);
-        startActivity(intent);
     }
 }
