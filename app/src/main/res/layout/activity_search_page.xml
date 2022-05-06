@@ -38,8 +38,12 @@
         android:id="@+id/directions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="directions"
         android:onClick="onDirectionsClick"
-        tools:layout_editor_absoluteX="271dp"
-        tools:layout_editor_absoluteY="667dp" />
+        android:text="directions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.944"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
 </androidx.constraintlayout.widget.ConstraintLayout>
