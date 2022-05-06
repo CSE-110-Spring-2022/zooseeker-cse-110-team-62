@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -118,10 +119,28 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     public void onNextClick(View view) {
         this.pathIdx = this.pathIdx + 1;
+        if (path.getLength() == this.pathIdx){
+            TextView finishText = (TextView) findViewById(R.id.finish_text);
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
 
-        TextView textView = (TextView) findViewById(R.id.path_exhibit);
-        String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
-        textView.setText(pathString);
+            Button prev_button = (Button) findViewById(R.id.previous);
+            Button next_button = (Button) findViewById(R.id.next);
+            prev_button.setVisibility(View.INVISIBLE);
+            next_button.setVisibility(View.INVISIBLE);
+
+            textView.setVisibility(View.INVISIBLE);
+            finishText.setVisibility(View.VISIBLE);
+        } else {
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
+            String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
+            textView.setText(pathString);
+        }
+    }
+
+    public void onHomeClick(View view){
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
+        finish();
     }
 
     @Override
