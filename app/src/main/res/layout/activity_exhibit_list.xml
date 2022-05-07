@@ -42,7 +42,7 @@
         android:id="@+id/exhibits_length_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
+
         android:text="0"
         app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toEndOf="parent"

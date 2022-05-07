@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+
+import java.util.List;
 
 /**
  * @description: Class that manages the "Plan" list within our ZooSeeker app.
@@ -28,6 +31,12 @@ public class ExhibitActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
+
+        TextView number = findViewById(R.id.exhibits_length_text);
+        List<ExhibitItem> exList = viewModel.getList();
+        Integer size = exList.size();
+        String stringSize = size.toString();
+        number.setText(stringSize);
 
         ExhibitAdapter adapter = new ExhibitAdapter();
         adapter.setHasStableIds(true);
