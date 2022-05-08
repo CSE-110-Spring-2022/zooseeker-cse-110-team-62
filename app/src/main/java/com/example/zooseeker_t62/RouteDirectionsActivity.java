@@ -45,11 +45,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         List<ExhibitItem> exhibits = getPlannerExhibits();
 
-        start = exhibits.get(0).id;
-        end = exhibits.get(exhibits.size() - 1).id;
-
         g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-        path = DijkstraShortestPath.findPathBetween(g, start, end);
+
+        String nearestFirstNeighbor = findNearestFirstNeighbor(g, exhibits);
+
+        // Initial call from entrance to nearestFirstNeighbor
+        start = "entrance_plaza";
+        path = DijkstraShortestPath.findPathBetween(g, start, nearestFirstNeighbor);
 
         vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
         eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
@@ -62,6 +64,28 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(pathString);
+    }
+
+    public String findNearestFirstNeighbor(Graph<String, IdentifiedWeightedEdge> g,
+                                           List<ExhibitItem> exhibits ) {
+        String start = "entrance_plaza";
+        String nearestFirstNeighbor = "";
+        double shortestTotalPathWeight = Double.MAX_VALUE;
+
+        for (int i = 0; i < exhibits.size(); i++) {
+            GraphPath<String, IdentifiedWeightedEdge> currPath = DijkstraShortestPath.findPathBetween(g, start, exhibits.get(i).id);
+            if (currPath.getLength() > 0) {
+                double totalCurrPathWeight = 0;
+                for (IdentifiedWeightedEdge e : currPath.getEdgeList()) {
+                    totalCurrPathWeight += g.getEdgeWeight(e);
+                }
+                if (totalCurrPathWeight < shortestTotalPathWeight) {
+                    shortestTotalPathWeight = totalCurrPathWeight;
+                    nearestFirstNeighbor = exhibits.get(i).id;
+                }
+            }
+        }
+        return nearestFirstNeighbor;
     }
 
     List<ExhibitItem> getPlannerExhibits() {
