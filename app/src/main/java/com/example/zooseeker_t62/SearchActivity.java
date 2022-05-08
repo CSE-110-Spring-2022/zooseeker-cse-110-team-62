@@ -110,7 +110,7 @@ public class SearchActivity extends AppCompatActivity {
                         Log.d("onAddExhibitClicked", "stringTags: " + stringTags.toString());
 
                         viewModel.createExhibit(id, kind, name, stringTags);
-
+                        Utilities.showAlert(this, "Press OK to keep adding to the plan.");
                         Log.d("onAddExhibitClicked", "created exhibit " + id);
 
                         break;
