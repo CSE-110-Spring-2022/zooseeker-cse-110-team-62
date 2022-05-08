@@ -7,14 +7,30 @@
 
     <TextView
         android:id="@+id/path_exhibit"
-        android:layout_width="211dp"
-        android:layout_height="112dp"
+        android:layout_width="357dp"
+        android:layout_height="251dp"
+        android:gravity="center"
         android:text="TextView"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.376" />
+
+    <!--    <Button-->
+<!--        android:id="@+id/homeButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:onClick="onHomeClick"-->
+<!--        android:text="Home"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/next"-->
+<!--        app:layout_constraintHorizontal_bias="0.441"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/previous"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/path_exhibit"-->
+<!--        app:layout_constraintVertical_bias="0.733" />-->
 
     <Button
         android:id="@+id/previous"
@@ -24,10 +40,10 @@
         android:text="Previous"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintHorizontal_bias="0.089"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868" />
+        app:layout_constraintVertical_bias="0.893" />
 
     <Button
         android:id="@+id/next"
@@ -37,29 +53,16 @@
         android:text="Next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.913"
+        app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868" />
-
-    <Button
-        android:id="@+id/homeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onHomeClick"
-        android:text="Home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/next"
-        app:layout_constraintHorizontal_bias="0.441"
-        app:layout_constraintStart_toEndOf="@+id/previous"
-        app:layout_constraintTop_toBottomOf="@+id/path_exhibit"
-        app:layout_constraintVertical_bias="0.733" />
+        app:layout_constraintVertical_bias="0.893" />
 
     <TextView
         android:id="@+id/finish_text"
         android:layout_width="211dp"
         android:layout_height="92dp"
-        android:text="Route finished! Taking you home."
+        android:text="Route finished!"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/previous"
         app:layout_constraintEnd_toEndOf="parent"

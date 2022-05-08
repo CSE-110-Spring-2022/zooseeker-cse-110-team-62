@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -49,5 +50,12 @@ public class ExhibitActivity extends AppCompatActivity {
      */
     public void onGoBackClicked(View view) {
         finish();
+    }
+    /**
+     * @description: Handles the opening of the new direction/route Activity
+     */
+    public void onDirectionsClick(View view) {
+        Intent intent = new Intent(this, RouteDirectionsActivity.class);
+        startActivity(intent);
     }
 }
