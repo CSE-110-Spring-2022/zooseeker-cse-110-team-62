@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 public class RouteDirectionsActivity extends AppCompatActivity {
 
@@ -36,6 +38,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private GraphPath<String, IdentifiedWeightedEdge> path;
     private Map<String, ZooData.VertexInfo> vInfo;
     private Map<String, ZooData.EdgeInfo> eInfo;
+    private List<String> pathStrings;
+    private String currNode;
 
 
     @Override
@@ -46,30 +50,66 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         List<ExhibitItem> exhibits = getPlannerExhibits();
 
         g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-
-        String nearestFirstNeighbor = findNearestFirstNeighbor(g, exhibits);
-
-        // Initial call from entrance to nearestFirstNeighbor
-        start = "entrance_plaza";
-        path = DijkstraShortestPath.findPathBetween(g, start, nearestFirstNeighbor);
+        currNode = "entrance_plaza";
 
         vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
         eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
 
-        printPathString(g, path, vInfo, eInfo);
-
         pathIdx = 0;
+        pathStrings = new ArrayList<>();
 
-        String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
+        while (!exhibits.isEmpty()) {
+            String nearestNeighbor = findNearestNeighbor(g, currNode, exhibits);
 
+            if (nearestNeighbor.equals("")) {
+                break;
+            }
+            path = DijkstraShortestPath.findPathBetween(g, currNode, nearestNeighbor);
+
+            String from = getNameFromID(currNode, exhibits);
+            // case where "from" ID is not an exhibit, namely entrance_plaza
+            if (from.equals("")) {
+                from = "Entrance Plaza";
+            }
+            for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+                String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+                String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+
+                String to = (!sourceName.equals(from)) ? sourceName : targetName;
+                String pathString = String.format(Locale,
+                        "Walk %.0f meters along %s from '%s' to '%s'.\n",
+                        g.getEdgeWeight(edge),
+                        eInfo.get(edge.getId()).street,
+                        from,
+                        to);
+
+                from = to;
+                pathStrings.add(pathString);
+            }
+            for (int i = 0; i < exhibits.size(); i++) {
+                if (currNode.equals(exhibits.get(i).id)) {
+                    exhibits.remove(i);
+                }
+            }
+            currNode = nearestNeighbor;
+        }
+        String pathString = pathStrings.get(0);
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(pathString);
     }
 
-    public String findNearestFirstNeighbor(Graph<String, IdentifiedWeightedEdge> g,
+    public String getNameFromID(String id, List<ExhibitItem> exhibits) {
+        for (ExhibitItem item : exhibits) {
+            if(item.id.equals(id)) {
+                return item.name;
+            }
+        }
+        return "";
+    }
+
+    public String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
                                            List<ExhibitItem> exhibits ) {
-        String start = "entrance_plaza";
-        String nearestFirstNeighbor = "";
+        String nearestNeighbor = "";
         double shortestTotalPathWeight = Double.MAX_VALUE;
 
         for (int i = 0; i < exhibits.size(); i++) {
@@ -81,11 +121,11 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 }
                 if (totalCurrPathWeight < shortestTotalPathWeight) {
                     shortestTotalPathWeight = totalCurrPathWeight;
-                    nearestFirstNeighbor = exhibits.get(i).id;
+                    nearestNeighbor = exhibits.get(i).id;
                 }
             }
         }
-        return nearestFirstNeighbor;
+        return nearestNeighbor;
     }
 
     List<ExhibitItem> getPlannerExhibits() {
@@ -133,23 +173,25 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     public void onPrevClick(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-//        this.pathIdx = this.pathIdx - 1;
-//
-//        TextView textView = (TextView) findViewById(R.id.path_exhibit);
-//        String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
-//        textView.setText(pathString);
+        if (pathIdx == 0) {
+            Intent intent = new Intent(this, ExhibitActivity.class);
+            startActivity(intent);
+        } else {
+            this.pathIdx = this.pathIdx - 1;
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
+            String pathString = pathStrings.get(pathIdx);
+            textView.setText(pathString);
+        }
     }
 
     public void onNextClick(View view) {
         this.pathIdx = this.pathIdx + 1;
-        if (path.getLength() == this.pathIdx){
+        if (pathStrings.size() == this.pathIdx){
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
+            String pathString = pathStrings.get(pathIdx);
             textView.setText(pathString);
         }
     }
