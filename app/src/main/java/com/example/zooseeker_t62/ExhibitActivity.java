@@ -7,7 +7,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @description: Class that manages the "Plan" list within our ZooSeeker app.
@@ -31,10 +41,31 @@ public class ExhibitActivity extends AppCompatActivity {
                 .get(ExhibitViewModel.class);
 
         ExhibitAdapter adapter = new ExhibitAdapter();
+
+        try {
+            String graph_string = loadGraphString();
+            JSONObject graph_json = new JSONObject(graph_string);
+            JSONArray edges = graph_json.getJSONArray("edges");
+            adapter.setEdges(edges);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
         adapter.setHasStableIds(true);
         adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
         recyclerView.setAdapter(adapter);
         viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
+    }
+
+    public String loadGraphString() throws IOException {
+        InputStream inputStream = this.getAssets().open("sample_zoo_graph.json");
+        int size = inputStream.available();
+        byte[] buffer = new byte[size];
+        inputStream.read(buffer);
+        inputStream.close();
+        String graph_string = new String(buffer, "UTF-8");
+
+        return graph_string;
     }
 
     /**

@@ -9,8 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -19,6 +23,7 @@ import java.util.function.Consumer;
 public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHolder> {
     private List<ExhibitItem> exhibitItems = Collections.emptyList();
     private Consumer<ExhibitItem> onDeleteButtonClicked;
+    private JSONArray edges;
 
     /**
      * @description:
@@ -28,6 +33,10 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         this.exhibitItems = newExhibitItems;
         Log.d("ExhibitAdapter.java, exhibitItems: ", exhibitItems.toString());
         notifyDataSetChanged();
+    }
+
+    public void setEdges(JSONArray edges) {
+        this.edges = edges;
     }
 
     /**
@@ -55,7 +64,11 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setExhibitItem(exhibitItems.get(position));
+        try {
+            holder.setExhibitItem(exhibitItems.get(position));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -108,11 +121,29 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         /**
          * @description:
          */
-        public void setExhibitItem(ExhibitItem exhibitItem) {
+        public void setExhibitItem(ExhibitItem exhibitItem) throws JSONException {
             this.exhibitItem = exhibitItem;
-            this.textView.setText(exhibitItem.name);
-            Log.d("ExhibitAdapter.java", exhibitItem.toString());
-            Log.d("ExhibitAdapter.java", "setExhibitItem()");
+
+            String distance = findExhibitDist(exhibitItem.id);
+            if (distance == null) {
+                this.textView.setText(String.format("%s" , exhibitItem.name));
+            } else {
+                this.textView.setText(String.format("%s, %s ft" , exhibitItem.name, distance));
+            }
+        }
+        public String findExhibitDist(String id) throws JSONException {
+            for (int i = 0; i < edges.length(); i++) {
+                String currSource =  edges.getJSONObject(i).getString("source");
+                String currTarget = edges.getJSONObject(i).getString("target");
+                String currWeight = edges.getJSONObject(i).getString("weight");
+
+                if (currSource.equals("entrance_plaza") || currTarget.equals("entrance_plaza")) {
+                    if (id.equals(currTarget) || id.equals(currSource)) {
+                        return currWeight;
+                    }
+                }
+            }
+          return null;
         }
     }
 }
