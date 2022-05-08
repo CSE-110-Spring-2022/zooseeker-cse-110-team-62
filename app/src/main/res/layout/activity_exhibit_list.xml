@@ -9,7 +9,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exhibit_items"
         android:layout_width="408dp"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:layout_marginTop="88dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -18,50 +18,67 @@
         android:id="@+id/home_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
         android:onClick="onGoBackClicked"
         android:text="Home"
-        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintTop_toBottomOf="@+id/exhibit_items"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/directions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:onClick="onDirectionsClick"
+        android:text="directions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.944"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exhibit_items"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/plan_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Plan"
+        android:text="My Plan"
         android:textSize="30sp"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/exhibits_length_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:text="0"
-        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.809"
-        app:layout_constraintStart_toEndOf="@+id/plan_text"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.521" />
+<!--    <TextView-->
+<!--        android:id="@+id/exhibits_length_text"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:inputType="number"-->
+<!--        android:text="0"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.809"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/plan_text"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.521" />-->
 
-    <TextView
-        android:id="@+id/filler_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:text="Exhibits:"
-        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
-        app:layout_constraintEnd_toStartOf="@+id/exhibits_length_text"
-        app:layout_constraintHorizontal_bias="0.985"
-        app:layout_constraintStart_toEndOf="@+id/home_btn"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.492" />
+<!--    <TextView-->
+<!--        android:id="@+id/filler_text"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="4dp"-->
+<!--        android:layout_marginEnd="4dp"-->
+<!--        android:text="Exhibits:"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/exhibits_length_text"-->
+<!--        app:layout_constraintHorizontal_bias="0.985"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/home_btn"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.492" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

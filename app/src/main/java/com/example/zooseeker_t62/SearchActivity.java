@@ -129,15 +129,6 @@ public class SearchActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ExhibitActivity.class);
         startActivity(intent);
     }
-
-    /**
-     * @description: Handles the opening of the new direction/route Activity
-     */
-    public void onDirectionsClick(View view) {
-        Intent intent = new Intent(this, RouteDirectionsActivity.class);
-        startActivity(intent);
-    }
-
     /**
      * @description: Proper activity cleanup when destroyed
      */

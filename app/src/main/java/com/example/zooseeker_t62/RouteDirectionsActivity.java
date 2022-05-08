@@ -101,8 +101,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             IdentifiedWeightedEdge edge = path.getEdgeList().get(pathIdx);
             return String.format(Locale,
-                    "  %d. Walk %.0f meters along %s from '%s' to '%s'.\n",
-                    pathIdx,
+                    "Walk %.0f meters along %s from '%s' to '%s'.\n",
                     g.getEdgeWeight(edge),
                     eInfo.get(edge.getId()).street,
                     vInfo.get(g.getEdgeSource(edge).toString()).name,
@@ -110,37 +109,25 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     public void onPrevClick(View view) {
-        this.pathIdx = this.pathIdx - 1;
-
-        TextView textView = (TextView) findViewById(R.id.path_exhibit);
-        String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
-        textView.setText(pathString);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+//        this.pathIdx = this.pathIdx - 1;
+//
+//        TextView textView = (TextView) findViewById(R.id.path_exhibit);
+//        String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
+//        textView.setText(pathString);
     }
 
     public void onNextClick(View view) {
         this.pathIdx = this.pathIdx + 1;
         if (path.getLength() == this.pathIdx){
-            TextView finishText = (TextView) findViewById(R.id.finish_text);
-            TextView textView = (TextView) findViewById(R.id.path_exhibit);
-
-            Button prev_button = (Button) findViewById(R.id.previous);
-            Button next_button = (Button) findViewById(R.id.next);
-            prev_button.setVisibility(View.INVISIBLE);
-            next_button.setVisibility(View.INVISIBLE);
-
-            textView.setVisibility(View.INVISIBLE);
-            finishText.setVisibility(View.VISIBLE);
+            Intent intent = new Intent(this, ExitActivity.class);
+            startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
             String pathString = genPathString(pathIdx, g, path, vInfo, eInfo );
             textView.setText(pathString);
         }
-    }
-
-    public void onHomeClick(View view){
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-        finish();
     }
 
     @Override
