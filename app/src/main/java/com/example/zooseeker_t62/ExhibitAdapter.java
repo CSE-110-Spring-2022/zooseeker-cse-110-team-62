@@ -128,7 +128,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
             if (distance == null) {
                 this.textView.setText(String.format("%s" , exhibitItem.name));
             } else {
-                this.textView.setText(String.format("%s, %s ft" , exhibitItem.name, distance));
+                this.textView.setText(String.format("%s, %sm" , exhibitItem.name, distance));
             }
         }
         public String findExhibitDist(String id) throws JSONException {

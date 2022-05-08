@@ -80,7 +80,8 @@ public class ExhibitActivity extends AppCompatActivity {
      * @description: finish()ing the Activity when returning to the caller Activity
      */
     public void onGoBackClicked(View view) {
-        finish();
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
     /**
      * @description: Handles the opening of the new direction/route Activity
