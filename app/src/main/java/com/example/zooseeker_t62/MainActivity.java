@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * @description: The Main Activity of ZooSeeker. Essentially unused
+ */
 public class MainActivity extends AppCompatActivity {
     /**
      * @description: Entry point of our app, links to SearchActivity
@@ -18,7 +21,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
-
-
-
 }

@@ -22,6 +22,7 @@ import java.util.List;
 public class AnimalItem {
     public String id, kind, name;
     public String[] tags;
+
     /**
      * @description: Animal Item Constructor
      */
@@ -32,6 +33,9 @@ public class AnimalItem {
         this.tags = tags;
     }
 
+    /**
+     * @description: Generates the string representation of the object when printed
+     */
     @Override
     public String toString() {
         return "{" +
@@ -43,7 +47,7 @@ public class AnimalItem {
     }
 
     /**
-     * @description: loads JSON from path and returns object
+     * @description: Loads JSON from path and returns object
      */
     public static List<AnimalItem> loadJSON(Context context, String path){
         try {

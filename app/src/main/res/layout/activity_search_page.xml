@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".SearchActivity">
 
-
     <Button
         android:id="@+id/plan_btn"
         android:layout_width="wrap_content"
