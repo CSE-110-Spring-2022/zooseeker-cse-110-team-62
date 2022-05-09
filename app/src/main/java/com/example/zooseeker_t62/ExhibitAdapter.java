@@ -1,5 +1,6 @@
 package com.example.zooseeker_t62;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +22,24 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     private List<ExhibitItem> exhibitItems = Collections.emptyList();
     private Consumer<ExhibitItem> onDeleteButtonClicked;
     private JSONArray edges;
+    private TextView exhibitCount;
 
     public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;
         Log.d("ExhibitAdapter.java, exhibitItems: ", exhibitItems.toString());
+
+        exhibitCount.setText("Exhibits: " + exhibitItems.size());
+
+        Log.d("ExhibitAdapter.java", "" + exhibitItems.size());
         notifyDataSetChanged();
     }
+
+    public void setExhibitCount(TextView textView) {
+        this.exhibitCount = textView;
+    }
+
+
 
     public void setEdges(JSONArray edges) {
         this.edges = edges;
