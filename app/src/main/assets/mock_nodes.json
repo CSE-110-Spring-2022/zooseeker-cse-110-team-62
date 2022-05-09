@@ -1,0 +1,21 @@
+[
+  {
+    "id": "one",
+    "kind": "",
+    "name": "1",
+    "tags": [
+    ]
+  },
+  {
+    "id": "two",
+    "kind": "",
+    "name": "2",
+    "tags": []
+  },
+  {
+    "id": "three",
+    "kind": "",
+    "name": "3",
+    "tags": []
+  }
+]

@@ -58,15 +58,25 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     /**
      * @description: Loads in graph data from ZooData helper functions
      */
-    public void loadGraphData() {
-        g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-        vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
-        eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
+    public boolean loadGraphData() {
+        try {
+            g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
+            vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
+            eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
+        }
+        catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
     /**
      * @description: Main loop that calculates optimal path using algo referenced in class header
      */
-    public void buildOptimalPath(List<ExhibitItem> exhibits) {
+    public boolean buildOptimalPath(List<ExhibitItem> exhibits) {
+        if (exhibits == null || exhibits.size() <= 0) {
+            return false;
+        }
         pathIdx = 0;
         currNode = "entrance_plaza";
         pathStrings = new ArrayList<>();
@@ -110,12 +120,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         String pathString = pathStrings.get(0);
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(pathString);
+
+        return true;
     }
 
     /**
      * @description: Since we have ID's in exhibits but we need names, helper to convert
      */
-    public String getNameFromID(String id, List<ExhibitItem> exhibits) {
+    public static String getNameFromID(String id, List<ExhibitItem> exhibits) {
         for (ExhibitItem item : exhibits) {
             if(item.id.equals(id)) {
                 return item.name;
@@ -126,7 +138,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     /**
      * @description: Algo to find nearest neighbor given a node in our graph
      */
-    public String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
+    public static String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
                                            List<ExhibitItem> exhibits ) {
         String nearestNeighbor = "";
         double shortestTotalPathWeight = Double.MAX_VALUE;

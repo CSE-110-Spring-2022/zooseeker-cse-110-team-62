@@ -45,6 +45,8 @@ public class ExhibitsEmptyTest {
                         isDisplayed()));
         materialButton.perform(click());
 
+
+
         ViewInteraction textView = onView(
                 allOf(withId(R.id.exhibit_count), withText("Exhibits: 0"),
                         withParent(withParent(withId(android.R.id.content))),
