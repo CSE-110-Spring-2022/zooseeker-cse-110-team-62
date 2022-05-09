@@ -25,11 +25,16 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+/**
+ * @description: Uses our algorithm to calculate optimal route of exhibit paths
+ * 1. Finds exhibit shortest distance away from start and runs dijkstras(entrance, foundExhibit)
+ * 2. Once at that exhibit, re-evaluates and finds closestNearestNeighbor to this exhibit
+ * 3. Once found, runs dijkstras(currExhibit, closestNearestNeighbor)
+ * 4. Repeat until all exhibits are visited.
+ */
 public class RouteDirectionsActivity extends AppCompatActivity {
     public ExhibitViewModel viewModel;
 
-    private String start;
-    private String end;
     private int pathIdx;
     private java.util.Locale Locale;
 
@@ -47,28 +52,38 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         List<ExhibitItem> exhibits = getPlannerExhibits();
 
+        loadGraphData();
+        buildOptimalPath(exhibits);
+    }
+    /**
+     * @description: Loads in graph data from ZooData helper functions
+     */
+    public void loadGraphData() {
         g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-        currNode = "entrance_plaza";
-
         vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
         eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
-
+    }
+    /**
+     * @description: Main loop that calculates optimal path using algo referenced in class header
+     */
+    public void buildOptimalPath(List<ExhibitItem> exhibits) {
         pathIdx = 0;
+        currNode = "entrance_plaza";
         pathStrings = new ArrayList<>();
 
         while (!exhibits.isEmpty()) {
             String nearestNeighbor = findNearestNeighbor(g, currNode, exhibits);
+            if (nearestNeighbor.equals("")) break;
 
-            if (nearestNeighbor.equals("")) {
-                break;
-            }
             path = DijkstraShortestPath.findPathBetween(g, currNode, nearestNeighbor);
 
             String from = getNameFromID(currNode, exhibits);
             // case where "from" ID is not an exhibit, namely entrance_plaza
-            if (from.equals("")) {
-                from = "Entrance Plaza";
-            }
+            if (from.equals("")) from = "Entrance Plaza";
+            /**
+             *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+             *  unvisited node from the start
+             */
             for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
                 String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
                 String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
@@ -84,6 +99,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 from = to;
                 pathStrings.add(pathString);
             }
+            // Remove from array once visited, no need to visit again
             for (int i = 0; i < exhibits.size(); i++) {
                 if (currNode.equals(exhibits.get(i).id)) {
                     exhibits.remove(i);
@@ -96,6 +112,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         textView.setText(pathString);
     }
 
+    /**
+     * @description: Since we have ID's in exhibits but we need names, helper to convert
+     */
     public String getNameFromID(String id, List<ExhibitItem> exhibits) {
         for (ExhibitItem item : exhibits) {
             if(item.id.equals(id)) {
@@ -104,7 +123,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         return "";
     }
-
+    /**
+     * @description: Algo to find nearest neighbor given a node in our graph
+     */
     public String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
                                            List<ExhibitItem> exhibits ) {
         String nearestNeighbor = "";
@@ -125,7 +146,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         return nearestNeighbor;
     }
-
+    /**
+     * @description: Returns our exhibits currently planned
+     */
     List<ExhibitItem> getPlannerExhibits() {
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
@@ -137,39 +160,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return exhibits;
     }
 
-    void printPathString( Graph<String, IdentifiedWeightedEdge> g,
-                          GraphPath<String, IdentifiedWeightedEdge> path,
-                          Map<String, ZooData.VertexInfo> vInfo,
-                          Map<String, ZooData.EdgeInfo> eInfo) {
-        System.out.printf("The shortest path from '%s' to '%s' is:\n", start, end);
-
-        int i = 1;
-        for (IdentifiedWeightedEdge e : path.getEdgeList()) {
-            System.out.printf("  %d. Walk %.0f meters along %s from '%s' to '%s'.\n",
-                    i,
-                    g.getEdgeWeight(e),
-                    eInfo.get(e.getId()).street,
-                    vInfo.get(g.getEdgeSource(e).toString()).name,
-                    vInfo.get(g.getEdgeTarget(e).toString()).name);
-            i++;
-        }
-    }
-
-    String genPathString(int pathIdx, Graph<String, IdentifiedWeightedEdge> g,
-                           GraphPath<String, IdentifiedWeightedEdge> path,
-                           Map<String, ZooData.VertexInfo> vInfo,
-                           Map<String, ZooData.EdgeInfo> eInfo) {
-        Log.d("RouteActivity.java", "The shortest path from " + start + " to " + end + " is:\n");
-
-            IdentifiedWeightedEdge edge = path.getEdgeList().get(pathIdx);
-            return String.format(Locale,
-                    "Walk %.0f meters along %s from '%s' to '%s'.\n",
-                    g.getEdgeWeight(edge),
-                    eInfo.get(edge.getId()).street,
-                    vInfo.get(g.getEdgeSource(edge).toString()).name,
-                    vInfo.get(g.getEdgeTarget(edge).toString()).name);
-    }
-
+    /**
+     * @description: Upon Previous btn clicked, if pathIdx is 0 we go back to Planner, else
+     * we simply decrement pathIdx and thus the previous path string will display
+     */
     public void onPrevClick(View view) {
         if (pathIdx == 0) {
             Intent intent = new Intent(this, ExhibitActivity.class);
@@ -182,6 +176,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @description: Upon Next btn clicked, if pathIdx is at end of path string we go to end screen,
+     * else we simply increment pathIdx and thus the next path string will display
+     */
     public void onNextClick(View view) {
         this.pathIdx = this.pathIdx + 1;
         if (pathStrings.size() == this.pathIdx){
@@ -193,7 +191,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             textView.setText(pathString);
         }
     }
-
+    /**
+     * @description: Proper lifecycle cleanup
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
