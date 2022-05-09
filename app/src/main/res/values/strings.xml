@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Zooseeker_T62</string>
+    <string name="home_button">Home</string>
+    <string name="directions_button">Directions</string>
+    <string name="plan_page_title">My Plan</string>
+    <string name="plan_button">Plan</string>
+    <string name="route_completion">Route Finished!</string>
+    <string name="welcome">Welcome to Zooseeker!</string>
+    <string name="search_bar_suggest">Search for an animal . . .</string>
+    <string name="delete_symbol">×</string>
+    <string name="previous_button">Previous</string>
+    <string name="next_button">Next</string>
 </resources>

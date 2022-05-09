@@ -17,17 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @description: Class that...
- */
 public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHolder> {
     private List<ExhibitItem> exhibitItems = Collections.emptyList();
     private Consumer<ExhibitItem> onDeleteButtonClicked;
     private JSONArray edges;
 
-    /**
-     * @description:
-     */
     public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;
@@ -39,16 +33,10 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         this.edges = edges;
     }
 
-    /**
-     * @description:
-     */
     public void setOnDeleteButtonClickedHandler(Consumer<ExhibitItem> onDeleteButtonClicked) {
         this.onDeleteButtonClicked = onDeleteButtonClicked;
     }
 
-    /**
-     * @description:
-     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,9 +47,6 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         return new ViewHolder(view);
     }
 
-    /**
-     * @description:
-     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         try {
@@ -71,34 +56,21 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         }
     }
 
-    /**
-     * @description:
-     */
     @Override
     public int getItemCount() {
         Log.d("getItemCount()", "" + exhibitItems.size());
         return exhibitItems.size();
     }
 
-    /**
-     * @description:
-     */
     public long getItemId(int position) {
         return exhibitItems.get(position).long_id;
     }
 
-
-    /**
-     * @description:
-     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         private ExhibitItem exhibitItem;
         private final TextView deleteButton;
 
-        /**
-         * @description:
-         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.exhibit_item_text);
@@ -113,14 +85,8 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
             Log.d("ExhibitAdapter.java", "ViewHolder()");
         }
 
-        /**
-         * @description:
-         */
         public ExhibitItem getExhibitItem() {return exhibitItem;}
 
-        /**
-         * @description:
-         */
         public void setExhibitItem(ExhibitItem exhibitItem) throws JSONException {
             this.exhibitItem = exhibitItem;
 

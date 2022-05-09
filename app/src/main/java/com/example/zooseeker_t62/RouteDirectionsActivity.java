@@ -26,7 +26,6 @@ import java.util.Observer;
 import java.util.Set;
 
 public class RouteDirectionsActivity extends AppCompatActivity {
-
     public ExhibitViewModel viewModel;
 
     private String start;
@@ -40,7 +39,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private Map<String, ZooData.EdgeInfo> eInfo;
     private List<String> pathStrings;
     private String currNode;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
