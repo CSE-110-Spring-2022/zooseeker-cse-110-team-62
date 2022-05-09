@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -88,6 +89,10 @@ public class ExhibitActivity extends AppCompatActivity {
      * @description: Handles the opening of the new direction/route Activity
      */
     public void onDirectionsClick(View view) {
+        if (recyclerView.getAdapter().getItemCount() <= 0) {
+            Utilities.showAlert(this, "No exhibits have been added to the plan!");
+            return;
+        }
         Intent intent = new Intent(this, RouteDirectionsActivity.class);
         startActivity(intent);
     }
