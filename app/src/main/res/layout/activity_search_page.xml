@@ -35,20 +35,4 @@
         app:layout_goneMarginTop="20dp">
 
     </Button>
-    <!--        app:layout_constraintTop_toBottomOf="@+id/search_bar"-->
-        app:layout_constraintVertical_bias="0.135" />
-<!--    <AutoCompleteTextView-->
-<!--        android:id="@+id/search_bar"-->
-<!--        android:layout_width="348dp"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:background="#F5F5F5"-->
-<!--        android:hint="Search for an animal . . ."-->
-<!--        android:text=""-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.492"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.128" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>
