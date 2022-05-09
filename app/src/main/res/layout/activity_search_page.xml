@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".SearchActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="412dp"
+        android:layout_height="489dp"
+        android:padding="4dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <Button
         android:id="@+id/plan_btn"
         android:layout_width="wrap_content"
@@ -17,21 +30,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar"
-        app:layout_constraintVertical_bias="0.135" />
+        app:layout_constraintTop_toBottomOf="@+id/recycler_view"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_goneMarginTop="20dp">
 
-    <AutoCompleteTextView
-        android:id="@+id/search_bar"
-        android:layout_width="348dp"
-        android:layout_height="48dp"
-        android:background="#F5F5F5"
-        android:hint="@string/search_bar_suggest"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.128" />
+    </Button>
+    <!--        app:layout_constraintTop_toBottomOf="@+id/search_bar"-->
+        app:layout_constraintVertical_bias="0.135" />
+<!--    <AutoCompleteTextView-->
+<!--        android:id="@+id/search_bar"-->
+<!--        android:layout_width="348dp"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:background="#F5F5F5"-->
+<!--        android:hint="Search for an animal . . ."-->
+<!--        android:text=""-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.492"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.128" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

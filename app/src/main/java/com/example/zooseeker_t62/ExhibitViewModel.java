@@ -46,9 +46,13 @@ public class ExhibitViewModel extends AndroidViewModel {
         exhibitItemDao.delete(exhibitItem);
     }
 
+
     public void createExhibit(String id, String kind, String name, String[] tags) {
         //int endOfListOrder = exhibitItemDao.getOrderForAppend();
         ExhibitItem newItem = new ExhibitItem(id, kind, name, tags);
         exhibitItemDao.insert(newItem);
+    }
+    public void createExhibitFromList(ExhibitItem item) {
+        exhibitItemDao.insert(item);
     }
 }
