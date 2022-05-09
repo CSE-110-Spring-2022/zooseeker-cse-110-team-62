@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    { "id": "one"},
+    { "id": "two"},
+    { "id": "three"}
+  ],
+  "edges": [
+    {
+      "id": "edge-0",
+      "source": "one",
+      "target": "two",
+      "weight": 10.0
+    },
+    {
+      "id": "edge-1",
+      "source": "three",
+      "target": "one",
+      "weight": 100.0
+    },
+    {
+      "id": "edge-2",
+      "source": "three",
+      "target": "two",
+      "weight": 10.0
+    }
+  ]
+}
