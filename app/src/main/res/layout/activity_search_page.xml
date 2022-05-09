@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:onClick="onLaunchExhibitListClick"
-        android:text="Plan"
+        android:text="@string/plan_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -37,7 +37,6 @@
     </Button>
     <!--        app:layout_constraintTop_toBottomOf="@+id/search_bar"-->
         app:layout_constraintVertical_bias="0.135" />
-
 <!--    <AutoCompleteTextView-->
 <!--        android:id="@+id/search_bar"-->
 <!--        android:layout_width="348dp"-->

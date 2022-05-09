@@ -73,9 +73,11 @@ public class ExhibitItem {
             Type type = new TypeToken<List<ExhibitItem>>(){}.getType();
 
             List<ExhibitItem> animals = gson.fromJson(reader, type);
+
             return animals;
         } catch (IOException e) {
             e.printStackTrace();
+
             return Collections.emptyList();
         }
     }

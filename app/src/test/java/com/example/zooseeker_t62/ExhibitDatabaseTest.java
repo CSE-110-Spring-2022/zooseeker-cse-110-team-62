@@ -39,7 +39,6 @@ public class ExhibitDatabaseTest {
         db.close();
     }
 
-
     @Test
     public void testInsert() {
         ExhibitItem item1 = new ExhibitItem("Entrance", "not-exhibit", "entrance",
