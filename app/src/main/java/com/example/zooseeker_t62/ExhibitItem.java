@@ -57,6 +57,10 @@ public class ExhibitItem {
                 '}';
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     /**
      * @description: loads JSON from path and returns object
      */
