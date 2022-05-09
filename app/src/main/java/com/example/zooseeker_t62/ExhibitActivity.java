@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +36,9 @@ public class ExhibitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exhibit_list);
 
+        TextView text = findViewById(R.id.exhibit_count);
+
+
         recyclerView = findViewById(R.id.exhibit_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -56,6 +60,7 @@ public class ExhibitActivity extends AppCompatActivity {
         adapter.setOnDeleteButtonClickedHandler(viewModel::deleteExhibit);
         recyclerView.setAdapter(adapter);
         viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
+        adapter.setExhibitCount(text);
     }
 
     public String loadGraphString() throws IOException {
