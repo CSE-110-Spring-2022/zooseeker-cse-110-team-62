@@ -114,6 +114,5 @@ public class ZooData {
             Graph<String, IdentifiedWeightedEdge> empty = new DefaultUndirectedWeightedGraph<>(IdentifiedWeightedEdge.class);
             return empty;
         }
-
     }
 }

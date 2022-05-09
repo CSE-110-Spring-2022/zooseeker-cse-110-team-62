@@ -39,7 +39,6 @@ public class ExhibitViewModel extends AndroidViewModel {
             for (ExhibitItem item : items) {
                 Log.d("ExhibitViewModel.java", item.toString());
             }
-
         }
     }
 

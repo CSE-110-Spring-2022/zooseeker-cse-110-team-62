@@ -61,6 +61,7 @@ public class ExhibitActivity extends AppCompatActivity {
         InputStream inputStream = this.getAssets().open("sample_zoo_graph.json");
         int size = inputStream.available();
         byte[] buffer = new byte[size];
+
         inputStream.read(buffer);
         inputStream.close();
         String graph_string = new String(buffer, "UTF-8");
