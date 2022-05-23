@@ -7,7 +7,7 @@
     tools:context=".ExhibitActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/exhibit_items"
+        android:id="@+id/exhibit_items2"
         android:layout_width="408dp"
         android:layout_height="500dp"
         android:layout_marginTop="88dp"
@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/back_to_directions"
+        android:id="@+id/back_to_directions2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -26,23 +26,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exhibit_items"
+        app:layout_constraintTop_toBottomOf="@+id/exhibit_items2"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/plan_text"
+        android:id="@+id/plan_text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/plan_page_title"
         android:textSize="30sp"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/exhibit_count"
+        android:id="@+id/exhibit_count2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Exhibits: "
