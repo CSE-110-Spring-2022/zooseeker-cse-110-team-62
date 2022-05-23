@@ -221,8 +221,4 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
-
-    public void onPlanClick(View view) {
-
-    }
 }

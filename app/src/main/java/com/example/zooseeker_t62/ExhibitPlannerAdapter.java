@@ -71,7 +71,7 @@ public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitPlannerAd
 
         public ViewHolderPlanner(@NonNull View itemView) {
             super(itemView);
-            this.textView = itemView.findViewById(R.id.exhibit_item_text);
+            this.textView = itemView.findViewById(R.id.exhibit_item_text2);
 
             Log.d("ExhibitAdapter.java", "ViewHolder()");
         }
@@ -81,7 +81,7 @@ public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitPlannerAd
         public void setExhibitItem(ExhibitItem exhibitItem) throws JSONException {
             this.exhibitItem = exhibitItem;
 
-            String distance = findExhibitDist(exhibitItem.id);
+            String distance = null;//findExhibitDist(exhibitItem.id);
             if (distance == null) {
                 this.textView.setText(String.format("%s" , exhibitItem.name));
             } else {

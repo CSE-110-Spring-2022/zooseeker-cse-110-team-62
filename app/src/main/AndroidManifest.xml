@@ -29,6 +29,9 @@
             android:exported="false" >
         </activity>
         <activity
+            android:name=".ExhibitPlanner"
+            android:exported="false" />
+        <activity
             android:name=".ExitActivity"
             android:exported="false" >
         </activity>

@@ -29,9 +29,9 @@ public class ExhibitPlanner extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.exhibit_planner);
 
-        TextView text = findViewById(R.id.exhibit_count);
+        TextView text = findViewById(R.id.exhibit_count2);
 
-        recyclerView = findViewById(R.id.exhibit_items);
+        recyclerView = findViewById(R.id.exhibit_items2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         viewModel = new ViewModelProvider(this)
@@ -41,6 +41,7 @@ public class ExhibitPlanner extends AppCompatActivity {
 
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
+        viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
         adapter.setExhibitCount(text);
     }
 
@@ -56,6 +57,6 @@ public class ExhibitPlanner extends AppCompatActivity {
      * @description: finish()ing the Activity when returning to the caller Activity
      */
     public void onGoBackClicked(View view) {
-        onDestroy();
+        finish();
     }
 }

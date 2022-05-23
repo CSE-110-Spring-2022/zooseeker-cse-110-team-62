@@ -10,4 +10,5 @@
     <string name="delete_symbol">×</string>
     <string name="previous_button">Previous</string>
     <string name="next_button">Next</string>
+    <string name="current_plan">My Current Plan</string>
 </resources>
