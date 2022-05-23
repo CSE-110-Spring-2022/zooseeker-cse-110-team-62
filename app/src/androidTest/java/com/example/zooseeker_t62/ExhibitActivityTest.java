@@ -50,7 +50,7 @@ public class ExhibitActivityTest {
                 .build();
         ExhibitDatabase.injectTestDatabase(testDb);
 
-        List<ExhibitItem> exhibits = ExhibitItem.loadJSON(context, "sample_node_info.json");
+        List<ExhibitItem> exhibits = ExhibitItem.loadJSON(context, "zoo_node_info.json");
         exhibitItemDao = testDb.exhibitItemDao();
         exhibitItemDao.insertAll(exhibits);
     }
