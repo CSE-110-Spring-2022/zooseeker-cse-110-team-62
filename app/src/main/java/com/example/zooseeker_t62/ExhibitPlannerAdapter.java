@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitAdapterPlanner.ViewHolderPlanner> {
+public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitPlannerAdapter.ViewHolderPlanner> {
     private List<ExhibitItem> exhibitItems = Collections.emptyList();
     private JSONArray edges;
     private TextView exhibitCount;
@@ -41,7 +41,7 @@ public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitAdapterPl
     public ExhibitPlannerAdapter.ViewHolderPlanner onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.exhibit_item, parent, false);
+                .inflate(R.layout.exhibit_item_immutable, parent, false);
 
         return new ExhibitPlannerAdapter.ViewHolderPlanner(view);
     }

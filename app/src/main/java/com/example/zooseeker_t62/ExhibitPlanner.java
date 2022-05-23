@@ -37,11 +37,10 @@ public class ExhibitPlanner extends AppCompatActivity {
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
 
-        ExhibitAdapter adapter = new ExhibitAdapter();
+        ExhibitPlannerAdapter adapter = new ExhibitPlannerAdapter();
 
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
-        viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
         adapter.setExhibitCount(text);
     }
 
