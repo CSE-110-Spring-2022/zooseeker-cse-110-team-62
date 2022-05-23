@@ -60,9 +60,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      */
     public boolean loadGraphData() {
         try {
-            g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-            vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
-            eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
+            g = ZooData.loadZooGraphJSON("zoo_graph.json", this);
+            vInfo = ZooData.loadVertexInfoJSON("zoo_node_info.json", this);
+            eInfo = ZooData.loadEdgeInfoJSON("zoo_edge_info.json", this);
         }
         catch (Exception e) {
             return false;
@@ -78,7 +78,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
         pathIdx = 0;
-        currNode = "entrance_plaza";
+        currNode = "entrance_exit_gate";
+
         pathStrings = new ArrayList<>();
 
         while (!exhibits.isEmpty()) {
@@ -89,7 +90,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             String from = getNameFromID(currNode, exhibits);
             // case where "from" ID is not an exhibit, namely entrance_plaza
-            if (from.equals("")) from = "Entrance Plaza";
+            if (from.equals("")) from = "Entrance and Exit Gate";
             /**
              *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
              *  unvisited node from the start
@@ -117,6 +118,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             }
             currNode = nearestNeighbor;
         }
+
+
+        /* Not SRP, move this elsewhere */
         String pathString = pathStrings.get(0);
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(pathString);
@@ -144,6 +148,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         double shortestTotalPathWeight = Double.MAX_VALUE;
 
         for (int i = 0; i < exhibits.size(); i++) {
+            Log.d("RouteDirectionsActivity.java", start + ", " + exhibits.get(i).id);
             GraphPath<String, IdentifiedWeightedEdge> currPath = DijkstraShortestPath.findPathBetween(g, start, exhibits.get(i).id);
             if (currPath.getLength() > 0) {
                 double totalCurrPathWeight = 0;
@@ -209,5 +214,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public void onPlanClick(View view) {
+
     }
 }

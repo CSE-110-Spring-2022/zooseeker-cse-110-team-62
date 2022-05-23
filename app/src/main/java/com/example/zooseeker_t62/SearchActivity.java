@@ -44,7 +44,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_page);
 
-        searchList = ExhibitItem.loadJSON(this, "sample_node_info.json");
+        searchList = ExhibitItem.loadJSON(this, "zoo_node_info.json");
         viewModel = new ViewModelProvider(this).get(ExhibitViewModel.class);
         initRecyclerView();
     }
