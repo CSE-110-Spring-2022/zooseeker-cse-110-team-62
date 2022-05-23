@@ -208,6 +208,12 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             textView.setText(pathString);
         }
     }
+
+    public void onPlanClick(View view) {
+        Intent intent = new Intent(this, ExhibitPlanner.class);
+        startActivity(intent);
+    }
+
     /**
      * @description: Proper lifecycle cleanup
      */
