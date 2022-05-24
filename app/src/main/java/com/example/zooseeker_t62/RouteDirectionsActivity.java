@@ -1,5 +1,7 @@
 package com.example.zooseeker_t62;
 
+import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -78,7 +83,16 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
         pathIdx = 0;
-        currNode = "entrance_plaza";
+
+        //Set currNode to be ID of exhibit that is kind "gate"
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_node_info.json");
+        for(int i = 0 ; i < allExhibits.size() ; i++) {
+            ExhibitItem currExhibit = allExhibits.get(i);
+            if (currExhibit.getKind().equals("gate")) {
+                currNode = currExhibit.getId();
+            }
+        }
+
         pathStrings = new ArrayList<>();
 
         while (!exhibits.isEmpty()) {
@@ -88,8 +102,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             path = DijkstraShortestPath.findPathBetween(g, currNode, nearestNeighbor);
 
             String from = getNameFromID(currNode, exhibits);
-            // case where "from" ID is not an exhibit, namely entrance_plaza
-            if (from.equals("")) from = "Entrance Plaza";
+            // case where "from" ID is not an exhibit, namely entrance_exit_gate
+            if (from.equals("")) from = "Entrance and Exit Gate";
             /**
              *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
              *  unvisited node from the start

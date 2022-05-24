@@ -60,6 +60,8 @@ public class ExhibitItem {
     public String getName() {
         return this.name;
     }
+    public String getId() { return this.id; }
+    public String getKind() {return this.kind; }
 
     /**
      * @description: loads JSON from path and returns object
