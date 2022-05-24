@@ -51,17 +51,108 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     private List<String> inversePathStrings;
 
+    private String prevNode;
     private String currNode;
+    private String nextNode;
+    private List<String> currPath;
+    private List<String> currInvertedPath;
+    private List<ExhibitItem> exhibits;
+    private List<ExhibitItem> visited;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_directions);
 
-        List<ExhibitItem> exhibits = getPlannerExhibits();
+        exhibits = getPlannerExhibits();
 
         loadGraphData();
-        buildOptimalPath(exhibits);
+
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+
+        prevNode = null;
+        currNode = findEntrance(allExhibits);
+        visited = new ArrayList<>();
+
+        calcNextStep();
+
+        TextView textView = (TextView) findViewById(R.id.path_exhibit);
+        textView.setText(currPath.toString());
+    }
+
+    /**
+     * @description: When user clicks next these things happen:
+     */
+    public boolean calcNextStep() {
+        if (exhibits == null || exhibits.size() <= 0) {
+            return false;
+        }
+
+        nextNode = findNearestNeighbor(g, currNode, exhibits);
+
+        if (nextNode.equals("")) return false;
+
+        currPath = findCurrPath(currNode, nextNode, exhibits);
+
+        prevNode = currNode;
+        currNode = nextNode;
+        // Remove from array once visited, no need to visit again
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (currNode.equals(exhibits.get(i).id)) {
+                visited.add(exhibits.get(i));
+                exhibits.remove(i);
+            }
+        }
+        return true;
+    }
+
+    public boolean calcPrevStep() {
+        if (visited == null || visited.size() <= 0) {
+            return false;
+        }
+
+        prevNode = findNearestNeighbor(g, currNode, visited);
+        currInvertedPath = findCurrPath(currNode, prevNode, visited);
+
+        nextNode = currNode;
+        currNode = prevNode;
+        // Remove from array once visited, no need to visit again
+        for (int i = 0; i < visited.size(); i++) {
+            if (currNode.equals(visited.get(i).id)) {
+                exhibits.add(visited.get(i));
+                visited.remove(i);
+            }
+        }
+        return true;
+    }
+
+    public List<String> findCurrPath(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+
+            String to = (!sourceName.equals(from)) ? sourceName : targetName;
+            String pathString = String.format(Locale,
+                    "Walk %.0f meters along %s from '%s' to '%s'.\n",
+                    g.getEdgeWeight(edge),
+                    eInfo.get(edge.getId()).street,
+                    from,
+                    to);
+            from = to;
+            currPath.add(pathString);
+        }
+        return currPath;
     }
 
     /**
@@ -96,8 +187,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         return true;
     }
-
-
     /**
      * @description: Finds entrance of our data JSON
      */
@@ -232,14 +321,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * we simply decrement pathIdx and thus the previous path string will display
      */
     public void onPrevClick(View view) {
-        if (pathIdx == 0) {
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+        if (!calcPrevStep()) {
+            Log.d("test", "returns false");
             Intent intent = new Intent(this, ExhibitActivity.class);
             startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = inversePathStrings.get(pathIdx);
-            textView.setText(pathString);
-            this.pathIdx = this.pathIdx - 1;
+            String currInvertedPathString = "";
+            for (int i = 0; i < currInvertedPath.size(); i++) {
+                currInvertedPathString += currInvertedPath.get(i);
+            }
+            textView.setText(currInvertedPathString);
         }
     }
 
@@ -248,14 +341,17 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * else we simply increment pathIdx and thus the next path string will display
      */
     public void onNextClick(View view) {
-        this.pathIdx = this.pathIdx + 1;
-        if (pathStrings.size() == this.pathIdx){
+
+        if (!calcNextStep()){
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = pathStrings.get(pathIdx);
-            textView.setText(pathString);
+            String currPathString = "";
+            for (int i = 0; i < currPath.size(); i++) {
+                currPathString += currPath.get(i);
+            }
+            textView.setText(currPathString);
         }
     }
     /**
