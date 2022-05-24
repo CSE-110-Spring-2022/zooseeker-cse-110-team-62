@@ -23,6 +23,14 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     private Consumer<ExhibitItem> onDeleteButtonClicked;
     private JSONArray edges;
     private TextView exhibitCount;
+    private String entrance;
+    private Context context;
+
+    public ExhibitAdapter(Context context) {
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(context, "sample_ms1_demo_node_info.json");
+        this.entrance = RouteDirectionsActivity.findEntrance(allExhibits);
+        this.context = context;
+    }
 
     public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
@@ -102,26 +110,12 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         public void setExhibitItem(ExhibitItem exhibitItem) throws JSONException {
             this.exhibitItem = exhibitItem;
 
-            String distance = findExhibitDist(exhibitItem.id);
+            String distance = RouteDirectionsActivity.findExhibitDist(context, entrance, exhibitItem.id);
             if (distance == null) {
                 this.textView.setText(String.format("%s" , exhibitItem.name));
             } else {
-                this.textView.setText(String.format("%s, %sm" , exhibitItem.name, distance));
+                this.textView.setText(String.format("%s, %s ft." , exhibitItem.name, distance));
             }
-        }
-        public String findExhibitDist(String id) throws JSONException {
-            for (int i = 0; i < edges.length(); i++) {
-                String currSource =  edges.getJSONObject(i).getString("source");
-                String currTarget = edges.getJSONObject(i).getString("target");
-                String currWeight = edges.getJSONObject(i).getString("weight");
-
-                if (currSource.equals("entrance_plaza") || currTarget.equals("entrance_plaza")) {
-                    if (id.equals(currTarget) || id.equals(currSource)) {
-                        return currWeight;
-                    }
-                }
-            }
-          return null;
         }
     }
 }
