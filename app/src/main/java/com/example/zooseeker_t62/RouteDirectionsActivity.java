@@ -1,7 +1,9 @@
 package com.example.zooseeker_t62;
 
+import android.app.AlertDialog;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -159,7 +161,12 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                         eInfo.get(edge.getId()).street,
                         to,
                         from, to);
-
+                /*String skipString = String.format(Locale,
+                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
+                        g.getEdgeWeight(edge),
+                        eInfo.get(edge.getId()).street,
+                        from,
+                        to + 1, from);*/
                 from = to;
                 pathStrings.add(pathString);
                 inversePathStrings.add(inverseString);
@@ -258,6 +265,29 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             textView.setText(pathString);
         }
     }
+
+    /**
+     * @description: Upon Next btn clicked, if pathIdx is at end of path string we go to end screen,
+     * else we simply increment pathIdx and thus the next path string will display
+     */
+    public void onSkipClick(View view) {
+        //this skips DIRECTION not EXHIBIT need to fix
+        /*if(this.pathIdx <= pathStrings.size() - 1){
+            this.pathIdx = this.pathIdx + 2;
+        }*/
+        Utilities.showSkipAlert(this, "Exhibit skipped!");
+        //this is essentially onNextClick
+        this.pathIdx = this.pathIdx + 1;
+        if (pathStrings.size() == this.pathIdx){
+            Intent intent = new Intent(this, ExitActivity.class);
+            startActivity(intent);
+        } else {
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
+            String pathString = pathStrings.get(pathIdx);
+            textView.setText(pathString);
+        }
+    }
+
     /**
      * @description: Proper lifecycle cleanup
      */
