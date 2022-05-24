@@ -36,9 +36,9 @@ public class ExhibitViewModel extends AndroidViewModel {
         exhibitItems = exhibitItemDao.getAllLive();
         List<ExhibitItem> items = exhibitItemDao.getAll();
         if (items != null) {
-            for (ExhibitItem item : items) {
+            /*for (ExhibitItem item : items) {
                 Log.d("ExhibitViewModel.java", item.toString());
-            }
+            }*/
         }
     }
 
