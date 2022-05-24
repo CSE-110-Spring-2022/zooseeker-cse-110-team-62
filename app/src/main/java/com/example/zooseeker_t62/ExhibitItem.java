@@ -62,6 +62,7 @@ public class ExhibitItem {
     }
     public String getId() { return this.id; }
     public String getKind() {return this.kind; }
+    public String[] getTags() { return this.tags; }
 
     /**
      * @description: loads JSON from path and returns object
