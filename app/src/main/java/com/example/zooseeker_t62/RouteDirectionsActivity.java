@@ -13,8 +13,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.platform.app.InstrumentationRegistry;
+//import androidx.test.core.app.ApplicationProvider;
+//import androidx.test.platform.app.InstrumentationRegistry;
 
 
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * @description: Uses our algorithm to calculate optimal route of exhibit paths
@@ -51,13 +52,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     private List<String> inversePathStrings;
 
-    private String prevNode;
+
     private String currNode;
     private String nextNode;
     private List<String> currPath;
     private List<String> currInvertedPath;
     private List<ExhibitItem> exhibits;
-    private List<ExhibitItem> visited;
+    private List<ExhibitItem> unvisited;
+    private Stack<ExhibitItem> visited;
 
 
     @Override
@@ -67,13 +69,19 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         exhibits = getPlannerExhibits();
 
+        //Log.d("RouteDirectionsActivity.java onCreate", exhibits.toString());
+
         loadGraphData();
 
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
 
-        prevNode = null;
+        unvisited = new ArrayList<>();
+        for (ExhibitItem item : exhibits) {
+            unvisited.add(item);
+        }
+
         currNode = findEntrance(allExhibits);
-        visited = new ArrayList<>();
+        visited = new Stack<>();
 
         calcNextStep();
 
@@ -85,25 +93,36 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * @description: When user clicks next these things happen:
      */
     public boolean calcNextStep() {
-        if (exhibits == null || exhibits.size() <= 0) {
+        if (unvisited == null || unvisited.size() <= 0) {
             return false;
         }
 
-        nextNode = findNearestNeighbor(g, currNode, exhibits);
+        if (nextNode != null) {
+            for (int i = 0; i < exhibits.size(); i++) {
+                if (currNode.equals(exhibits.get(i).id)) {
+                    visited.push(exhibits.get(i));
+                }
+            }
+        }
+
+        nextNode = findNearestNeighbor(g, currNode, unvisited);
 
         if (nextNode.equals("")) return false;
 
+
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
-        prevNode = currNode;
+        //Log.d("calcNextStep()", "from " + currNode + " to " + nextNode);
         currNode = nextNode;
         // Remove from array once visited, no need to visit again
-        for (int i = 0; i < exhibits.size(); i++) {
-            if (currNode.equals(exhibits.get(i).id)) {
-                visited.add(exhibits.get(i));
-                exhibits.remove(i);
+        for (int i = 0; i < unvisited.size(); i++) {
+            if (currNode.equals(unvisited.get(i).id)) {
+                unvisited.remove(i);
             }
         }
+
+        //Log.d("calcNextStep()", visited.toString());
+
         return true;
     }
 
@@ -112,18 +131,23 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
-        prevNode = findNearestNeighbor(g, currNode, visited);
-        currInvertedPath = findCurrPath(currNode, prevNode, visited);
+
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (currNode.equals(exhibits.get(i).id)) {
+                unvisited.add(exhibits.get(i));
+            }
+        }
+
+
+        String prevNode = visited.peek().id;
+        currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
+
+        //Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
+        visited.pop();
 
         nextNode = currNode;
         currNode = prevNode;
         // Remove from array once visited, no need to visit again
-        for (int i = 0; i < visited.size(); i++) {
-            if (currNode.equals(visited.get(i).id)) {
-                exhibits.add(visited.get(i));
-                visited.remove(i);
-            }
-        }
         return true;
     }
 
