@@ -121,8 +121,17 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ExampleVie
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (ExhibitItem item : searchListFull) {
+                    //for names
                     if (item.getName().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
+                    } else {
+                        //for tags
+                        for(int i = 0 ; i < item.getTags().length ; i++){
+                            if(item.getTags()[i].toLowerCase().contains(filterPattern)){
+                                filteredList.add(item);
+                                break;
+                            }
+                        }
                     }
                 }
             }
