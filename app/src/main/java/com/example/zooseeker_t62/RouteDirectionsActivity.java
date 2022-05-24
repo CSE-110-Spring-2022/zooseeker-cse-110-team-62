@@ -68,9 +68,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      */
     public boolean loadGraphData() {
         try {
-            g = ZooData.loadZooGraphJSON("sample_zoo_graph.json", this);
-            vInfo = ZooData.loadVertexInfoJSON("sample_node_info.json", this);
-            eInfo = ZooData.loadEdgeInfoJSON("sample_edge_info.json", this);
+            g = ZooData.loadZooGraphJSON("sample_ms1_demo_zoo_graph.json", this);
+            vInfo = ZooData.loadVertexInfoJSON("sample_ms1_demo_node_info.json", this);
+            eInfo = ZooData.loadEdgeInfoJSON("sample_ms1_demo_edge_info.json", this);
         }
         catch (Exception e) {
             return false;
@@ -88,7 +88,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         pathIdx = 0;
 
         //Set currNode to be ID of exhibit that is kind "gate"
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_node_info.json");
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
         for(int i = 0 ; i < allExhibits.size() ; i++) {
             ExhibitItem currExhibit = allExhibits.get(i);
             if (currExhibit.getKind().equals("gate")) {
