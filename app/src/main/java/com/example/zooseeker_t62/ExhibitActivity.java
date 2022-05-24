@@ -45,7 +45,7 @@ public class ExhibitActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
 
-        ExhibitAdapter adapter = new ExhibitAdapter();
+        ExhibitAdapter adapter = new ExhibitAdapter(this);
 
         try {
             String graph_string = loadGraphString();

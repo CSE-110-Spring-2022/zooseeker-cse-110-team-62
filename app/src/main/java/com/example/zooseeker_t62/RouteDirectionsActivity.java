@@ -63,6 +63,24 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         loadGraphData();
         buildOptimalPath(exhibits);
     }
+
+    /**
+     * @description: find exhibit distance from entrance
+     */
+    public static String findExhibitDist(Context context, String entrance, String id) {
+        Graph<String, IdentifiedWeightedEdge> g = ZooData.loadZooGraphJSON("sample_ms1_demo_zoo_graph.json", context);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON("sample_ms1_demo_node_info.json", context);
+        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON("sample_ms1_demo_edge_info.json", context);
+
+        GraphPath<String, IdentifiedWeightedEdge> path = DijkstraShortestPath.findPathBetween(g, entrance, id);
+
+        double pathDist = 0;
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            pathDist += g.getEdgeWeight(edge);
+        }
+        return "" + pathDist;
+    }
+
     /**
      * @description: Loads in graph data from ZooData helper functions
      */
@@ -78,6 +96,21 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         return true;
     }
+
+
+    /**
+     * @description: Finds entrance of our data JSON
+     */
+    public static String findEntrance( List<ExhibitItem> exhibits) {
+        for(int i = 0 ; i <exhibits.size() ; i++) {
+            ExhibitItem currExhibit = exhibits.get(i);
+            if (currExhibit.getKind().equals("gate")) {
+                return currExhibit.getId();
+            }
+        }
+        return null;
+    }
+
     /**
      * @description: Main loop that calculates optimal path using algo referenced in class header
      */
@@ -89,12 +122,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         //Set currNode to be ID of exhibit that is kind "gate"
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
-        for(int i = 0 ; i < allExhibits.size() ; i++) {
-            ExhibitItem currExhibit = allExhibits.get(i);
-            if (currExhibit.getKind().equals("gate")) {
-                currNode = currExhibit.getId();
-            }
-        }
+        currNode = findEntrance(allExhibits);
+
 
         pathStrings = new ArrayList<>();
         inversePathStrings = new ArrayList<>();
@@ -191,7 +220,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this)
                 .get(ExhibitViewModel.class);
 
-        ExhibitAdapter adapter = new ExhibitAdapter();
+        ExhibitAdapter adapter = new ExhibitAdapter(this);
         adapter.setHasStableIds(true);
 
         List<ExhibitItem> exhibits = viewModel.getList();
