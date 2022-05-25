@@ -201,7 +201,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      */
     public boolean loadGraphData() {
         try {
-
             g = ZooData.loadZooGraphJSON("sample_ms1_demo_zoo_graph.json", this);
             vInfo = ZooData.loadVertexInfoJSON("sample_ms1_demo_node_info.json", this);
             eInfo = ZooData.loadEdgeInfoJSON("sample_ms1_demo_edge_info.json", this);
@@ -235,11 +234,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         pathIdx = 0;
 
-
         //Set currNode to be ID of exhibit that is kind "gate"
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
         currNode = findEntrance(allExhibits);
-
 
 
         pathStrings = new ArrayList<>();
@@ -254,9 +251,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             String from = getNameFromID(currNode, exhibits);
 
             // case where "from" ID is not an exhibit, namely entrance_exit_gate
-
-            if (from.equals("")) from = "Entrance and Exit Gate"; */
-            /*
              *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
              *  unvisited node from the start
              */
