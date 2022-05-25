@@ -63,15 +63,14 @@ public class RouteTest {
      */
     @Test
     public void testFindEntranceExists() {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
         List<ExhibitItem> exhibits = new ArrayList<ExhibitItem>();
         String[] tag = {""};
         for(int i = 0; i < 10; i++){
-            ExhibitItem exhibit = new ExhibitItem("", "exhibit", "exhibit", tag);
+            ExhibitItem exhibit = new ExhibitItem("", "exhibit", "exhibit", "", tag, 0.0, 0.0);
             exhibits.add(exhibit);
         }
         String expectedID = "expected_gate";
-        exhibits.add(new ExhibitItem(expectedID, "gate", "entrance", tag));
+        exhibits.add(new ExhibitItem(expectedID, "", "gate","", tag, 0.0, 0.0));
         org.junit.Assert.assertEquals(expectedID, RouteDirectionsActivity.findEntrance(exhibits));
 
         exhibits.remove(exhibits.size() - 1);
