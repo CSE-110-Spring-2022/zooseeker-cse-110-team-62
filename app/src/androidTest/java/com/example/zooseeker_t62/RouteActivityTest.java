@@ -221,7 +221,7 @@ public class RouteActivityTest {
         materialButton10.perform(click());
 
         ViewInteraction materialButton11 = onView(
-                allOf(withId(R.id.home_btn), withText("Home"),
+                allOf(withId(R.id.back_to_directions), withText("Home"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
