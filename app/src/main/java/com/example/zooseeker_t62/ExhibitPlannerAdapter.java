@@ -73,7 +73,7 @@ public class ExhibitPlannerAdapter extends RecyclerView.Adapter<ExhibitPlannerAd
             super(itemView);
             this.textView = itemView.findViewById(R.id.exhibit_item_text2);
 
-            Log.d("ExhibitAdapter.java", "ViewHolder()");
+            Log.d("ExhibitPlannerAdapter.java", "ViewHolder()");
         }
 
         public ExhibitItem getExhibitItem() {return exhibitItem;}
