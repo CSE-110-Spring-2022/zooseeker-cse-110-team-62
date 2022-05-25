@@ -1,5 +1,7 @@
 package com.example.zooseeker_t62;
 
+import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -43,6 +48,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private Map<String, ZooData.VertexInfo> vInfo;
     private Map<String, ZooData.EdgeInfo> eInfo;
     private List<String> pathStrings;
+
+    private List<String> inversePathStrings;
+
     private String currNode;
 
     @Override
@@ -78,8 +86,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
         pathIdx = 0;
-        currNode = "entrance_plaza";
+
+        //Set currNode to be ID of exhibit that is kind "gate"
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_node_info.json");
+        for(int i = 0 ; i < allExhibits.size() ; i++) {
+            ExhibitItem currExhibit = allExhibits.get(i);
+            if (currExhibit.getKind().equals("gate")) {
+                currNode = currExhibit.getId();
+            }
+        }
+
         pathStrings = new ArrayList<>();
+        inversePathStrings = new ArrayList<>();
 
         while (!exhibits.isEmpty()) {
             String nearestNeighbor = findNearestNeighbor(g, currNode, exhibits);
@@ -88,8 +106,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             path = DijkstraShortestPath.findPathBetween(g, currNode, nearestNeighbor);
 
             String from = getNameFromID(currNode, exhibits);
-            // case where "from" ID is not an exhibit, namely entrance_plaza
-            if (from.equals("")) from = "Entrance Plaza";
+            // case where "from" ID is not an exhibit, namely entrance_exit_gate
+            if (from.equals("")) from = "Entrance and Exit Gate";
             /**
              *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
              *  unvisited node from the start
@@ -100,14 +118,22 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
                 String to = (!sourceName.equals(from)) ? sourceName : targetName;
                 String pathString = String.format(Locale,
-                        "Walk %.0f meters along %s from '%s' to '%s'.\n",
+                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
                         g.getEdgeWeight(edge),
                         eInfo.get(edge.getId()).street,
                         from,
-                        to);
+                        to, from);
+
+                String inverseString = String.format(Locale,
+                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
+                        g.getEdgeWeight(edge),
+                        eInfo.get(edge.getId()).street,
+                        to,
+                        from, to);
 
                 from = to;
                 pathStrings.add(pathString);
+                inversePathStrings.add(inverseString);
             }
             // Remove from array once visited, no need to visit again
             for (int i = 0; i < exhibits.size(); i++) {
@@ -181,10 +207,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ExhibitActivity.class);
             startActivity(intent);
         } else {
-            this.pathIdx = this.pathIdx - 1;
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = pathStrings.get(pathIdx);
+            String pathString = inversePathStrings.get(pathIdx);
             textView.setText(pathString);
+            this.pathIdx = this.pathIdx - 1;
         }
     }
 
