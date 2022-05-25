@@ -47,9 +47,9 @@ public class ExhibitViewModel extends AndroidViewModel {
     }
 
 
-    public void createExhibit(String id, String kind, String name, String[] tags) {
+    public void createExhibit(String id, String parent_id, String kind, String name, String[] tags, double lat, double lng) {
         //int endOfListOrder = exhibitItemDao.getOrderForAppend();
-        ExhibitItem newItem = new ExhibitItem(id, kind, name, tags);
+        ExhibitItem newItem = new ExhibitItem(id, parent_id, kind, name, tags, lat, lng);
         exhibitItemDao.insert(newItem);
     }
     public void createExhibitFromList(ExhibitItem item) {
