@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+
         <entry key="..\:/Users/dhava/AndroidStudioProjects/zooseeker-cse-110-team-62/app/src/main/res/layout/activity_exhibit_list.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/dhava/AndroidStudioProjects/zooseeker-cse-110-team-62/app/src/main/res/layout/activity_exit.xml" value="0.13541666666666666" />
         <entry key="..\:/Users/dhava/AndroidStudioProjects/zooseeker-cse-110-team-62/app/src/main/res/layout/activity_search_page.xml" value="0.13272543059777103" />
@@ -15,7 +16,6 @@
         <entry key="..\:/Users/sumad/OneDrive/Documents/College Stuff/CSE110/zooseeker-cse-110-team-62/app/src/main/res/layout/activity_search_page.xml" value="0.33" />
         <entry key="..\:/Users/sumad/OneDrive/Documents/College Stuff/CSE110/zooseeker-cse-110-team-62/app/src/main/res/layout/exhibit_item.xml" value="0.67" />
         <entry key="..\:/Users/sumad/OneDrive/Documents/College Stuff/CSE110/zooseeker-cse-110-team-62/app/src/main/res/layout/search_item.xml" value="0.75" />
-        <entry key="..\:/Users/uhmji/AndroidStudioProjects/zooseeker-cse-110-team-62/app/src/main/res/layout/exhibit_planner.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_search_page.xml" value="0.32472826086956524" />
         <entry key="app/src/main/res/layout/exhibit_item.xml" value="0.32472826086956524" />

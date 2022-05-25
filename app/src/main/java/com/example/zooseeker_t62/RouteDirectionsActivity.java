@@ -227,6 +227,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     /**
      * @description: Main loop that calculates optimal path using algo referenced in class header
      */
+    /*
     public boolean buildOptimalPath(List<ExhibitItem> exhibits) {
         if (exhibits == null || exhibits.size() <= 0) {
             return false;
@@ -250,11 +251,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             String from = getNameFromID(currNode, exhibits);
 
             // case where "from" ID is not an exhibit, namely entrance_exit_gate
-            if (from.equals("")) from = "Entrance and Exit Gate";
-            /**
              *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
              *  unvisited node from the start
              */
+            /*
             for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
                 String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
                 String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
@@ -286,15 +286,16 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             }
             currNode = nearestNeighbor;
         }
-
+        */
 
         /* Not SRP, move this elsewhere */
+            /*
         String pathString = pathStrings.get(0);
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(pathString);
 
         return true;
-    }
+    }*/
 
     /**
      * @description: Since we have ID's in exhibits but we need names, helper to convert

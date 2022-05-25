@@ -45,6 +45,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_page);
 
+
         List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
         searchList = animals.stream().filter(animal -> animal.getKind().equals("exhibit")).collect(Collectors.toList());
 
