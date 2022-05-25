@@ -27,6 +27,7 @@ import org.json.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @description: This class represents the Activity where our ZooSeeker has a search bar to
@@ -44,7 +45,10 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_page);
 
-        searchList = ExhibitItem.loadJSON(this, "zoo_node_info.json");
+
+        List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+        searchList = animals.stream().filter(animal -> animal.getKind().equals("exhibit")).collect(Collectors.toList());
+
         viewModel = new ViewModelProvider(this).get(ExhibitViewModel.class);
         initRecyclerView();
     }
