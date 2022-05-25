@@ -34,14 +34,21 @@ public class ExhibitItem {
     @NonNull
     public String[] tags;
 
+    public double lat, lng;
+
+    public String parent_id;
+
     /**
      * @description: The constructor
      */
-    public ExhibitItem(String id, String kind, String name, String[] tags){
+    public ExhibitItem(String id, String parent_id, String kind, String name, String[] tags, double lat, double lng){
         this.id = id;
+        this.parent_id = parent_id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     /**
@@ -53,7 +60,10 @@ public class ExhibitItem {
                 "id='" + id + '\'' +
                 ", kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
-                ", tags=" + Arrays.toString(tags) +
+                ", tags=" + Arrays.toString(tags) + '\'' +
+                ", lat=" + lat + '\'' +
+                ", lng=" + lng + '\'' +
+                ", parent_id=" + parent_id +
                 '}';
     }
 
@@ -76,6 +86,16 @@ public class ExhibitItem {
             Type type = new TypeToken<List<ExhibitItem>>(){}.getType();
 
             List<ExhibitItem> animals = gson.fromJson(reader, type);
+
+            /*List<ExhibitItem> exhibits = new ArrayList<>();
+
+            for (ExhibitItem animal : animals) {
+                if (animal.kind.equals("exhibit")) {
+                    exhibits.add(animal);
+                }
+            }
+
+             */
 
             return animals;
         } catch (IOException e) {

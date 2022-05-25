@@ -35,11 +35,11 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;
-        Log.d("ExhibitAdapter.java, exhibitItems: ", exhibitItems.toString());
+        //Log.d("ExhibitAdapter.java, exhibitItems: ", exhibitItems.toString());
 
         exhibitCount.setText("Exhibits: " + exhibitItems.size());
 
-        Log.d("ExhibitAdapter.java", "" + exhibitItems.size());
+        //Log.d("ExhibitAdapter.java", "" + exhibitItems.size());
         notifyDataSetChanged();
     }
 
@@ -78,7 +78,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        Log.d("getItemCount()", "" + exhibitItems.size());
+        //Log.d("getItemCount()", "" + exhibitItems.size());
         return exhibitItems.size();
     }
 
@@ -102,7 +102,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
                 onDeleteButtonClicked.accept(exhibitItem);
             });
 
-            Log.d("ExhibitAdapter.java", "ViewHolder()");
+            //Log.d("ExhibitAdapter.java", "ViewHolder()");
         }
 
         public ExhibitItem getExhibitItem() {return exhibitItem;}
