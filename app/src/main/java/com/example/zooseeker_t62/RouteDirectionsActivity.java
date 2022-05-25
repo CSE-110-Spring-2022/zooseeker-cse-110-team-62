@@ -15,8 +15,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.platform.app.InstrumentationRegistry;
+//import androidx.test.core.app.ApplicationProvider;
+//import androidx.test.platform.app.InstrumentationRegistry;
 
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * @description: Uses our algorithm to calculate optimal route of exhibit paths
@@ -53,17 +54,147 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     private List<String> inversePathStrings;
 
+    private boolean isAtEntrance;
     private String currNode;
+    private String nextNode;
+    private List<String> currPath;
+    private List<String> currInvertedPath;
+    private List<ExhibitItem> exhibits;
+    private List<ExhibitItem> unvisited;
+    private Stack<ExhibitItem> visited;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_directions);
 
-        List<ExhibitItem> exhibits = getPlannerExhibits();
+        exhibits = getPlannerExhibits();
+
+        //Log.d("RouteDirectionsActivity.java onCreate", exhibits.toString());
 
         loadGraphData();
-        buildOptimalPath(exhibits);
+
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+
+        unvisited = new ArrayList<>();
+
+        for (int i = 0; i < allExhibits.size(); i++) {
+            if (allExhibits.get(i).kind.equals("gate")) {
+                unvisited.add(allExhibits.get(i));
+                exhibits.add(allExhibits.get(i));
+            }
+        }
+
+        for (ExhibitItem item : exhibits) {
+            unvisited.add(item);
+        }
+
+        currNode = findEntrance(allExhibits);
+        isAtEntrance = true;
+
+        visited = new Stack<>();
+
+        calcNextStep();
+
+        TextView textView = (TextView) findViewById(R.id.path_exhibit);
+        textView.setText(currPath.toString());
+    }
+
+    /**
+     * @description: When user clicks next these things happen:
+     */
+    public boolean calcNextStep() {
+        if (unvisited == null || unvisited.size() <= 0) {
+            return false;
+        }
+
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (currNode.equals(exhibits.get(i).id)) {
+                visited.push(exhibits.get(i));
+            }
+        }
+
+
+        nextNode = findNearestNeighbor(g, currNode, unvisited);
+
+        Log.d("nextNode", nextNode);
+
+        if (nextNode.equals("")) return false;
+
+
+        currPath = findCurrPath(currNode, nextNode, exhibits);
+
+        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
+
+
+        // Remove from array once visited, no need to visit again
+        for (int i = 0; i < unvisited.size(); i++) {
+            if (currNode.equals(unvisited.get(i).id)) {
+                unvisited.remove(i);
+            }
+        }
+        currNode = nextNode;
+//        if (!isAtEntrance)
+//        else {
+//            isAtEntrance = false;
+//        }
+        Log.d("calcNextStepStack()", visited.toString());
+
+        return true;
+    }
+
+    public boolean calcPrevStep() {
+        if (visited == null || visited.size() <= 0) {
+            return false;
+        }
+
+
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (currNode.equals(exhibits.get(i).id)) {
+                unvisited.add(exhibits.get(i));
+            }
+        }
+
+
+        String prevNode = visited.peek().id;
+        currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
+
+        Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
+        visited.pop();
+
+        nextNode = currNode;
+        currNode = prevNode;
+        // Remove from array once visited, no need to visit again
+        return true;
+    }
+
+    public List<String> findCurrPath(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+
+            String to = (!sourceName.equals(from)) ? sourceName : targetName;
+            String pathString = String.format(Locale,
+                    "Walk %.0f meters along %s from '%s' to '%s'.\n",
+                    g.getEdgeWeight(edge),
+                    eInfo.get(edge.getId()).street,
+                    from,
+                    to);
+            from = to;
+            currPath.add(pathString);
+        }
+        return currPath;
     }
 
     /**
@@ -98,8 +229,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         return true;
     }
-
-
     /**
      * @description: Finds entrance of our data JSON
      */
@@ -112,80 +241,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         return null;
     }
-
-    /**
-     * @description: Main loop that calculates optimal path using algo referenced in class header
-     */
-    public boolean buildOptimalPath(List<ExhibitItem> exhibits) {
-        if (exhibits == null || exhibits.size() <= 0) {
-            return false;
-        }
-        pathIdx = 0;
-
-        //Set currNode to be ID of exhibit that is kind "gate"
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
-        currNode = findEntrance(allExhibits);
-
-
-        pathStrings = new ArrayList<>();
-        inversePathStrings = new ArrayList<>();
-
-        while (!exhibits.isEmpty()) {
-            String nearestNeighbor = findNearestNeighbor(g, currNode, exhibits);
-            if (nearestNeighbor.equals("")) break;
-
-            path = DijkstraShortestPath.findPathBetween(g, currNode, nearestNeighbor);
-
-            String from = getNameFromID(currNode, exhibits);
-            // case where "from" ID is not an exhibit, namely entrance_exit_gate
-            if (from.equals("")) from = "Entrance and Exit Gate";
-            /**
-             *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
-             *  unvisited node from the start
-             */
-            for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
-                String sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
-                String targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
-
-                String to = (!sourceName.equals(from)) ? sourceName : targetName;
-                String pathString = String.format(Locale,
-                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
-                        g.getEdgeWeight(edge),
-                        eInfo.get(edge.getId()).street,
-                        from,
-                        to, from);
-
-                String inverseString = String.format(Locale,
-                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
-                        g.getEdgeWeight(edge),
-                        eInfo.get(edge.getId()).street,
-                        to,
-                        from, to);
-                /*String skipString = String.format(Locale,
-                        "Walk %.0f meters along %s from '%s' to '%s'.\n You are at %s",
-                        g.getEdgeWeight(edge),
-                        eInfo.get(edge.getId()).street,
-                        from,
-                        to + 1, from);*/
-                from = to;
-                pathStrings.add(pathString);
-                inversePathStrings.add(inverseString);
-            }
-            // Remove from array once visited, no need to visit again
-            for (int i = 0; i < exhibits.size(); i++) {
-                if (currNode.equals(exhibits.get(i).id)) {
-                    exhibits.remove(i);
-                }
-            }
-            currNode = nearestNeighbor;
-        }
-        String pathString = pathStrings.get(0);
-        TextView textView = (TextView) findViewById(R.id.path_exhibit);
-        textView.setText(pathString);
-
-        return true;
-    }
-
     /**
      * @description: Since we have ID's in exhibits but we need names, helper to convert
      */
@@ -206,6 +261,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         double shortestTotalPathWeight = Double.MAX_VALUE;
 
         for (int i = 0; i < exhibits.size(); i++) {
+//            Log.d("RouteDirectionsActivity.java", start + ", " + exhibits.get(i).id);
             GraphPath<String, IdentifiedWeightedEdge> currPath = DijkstraShortestPath.findPathBetween(g, start, exhibits.get(i).id);
             if (currPath.getLength() > 0) {
                 double totalCurrPathWeight = 0;
@@ -239,14 +295,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * we simply decrement pathIdx and thus the previous path string will display
      */
     public void onPrevClick(View view) {
-        if (pathIdx == 0) {
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+        if (!calcPrevStep()) {
+//            Log.d("test", "returns false");
             Intent intent = new Intent(this, ExhibitActivity.class);
             startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = inversePathStrings.get(pathIdx);
-            textView.setText(pathString);
-            this.pathIdx = this.pathIdx - 1;
+            String currInvertedPathString = "";
+            for (int i = 0; i < currInvertedPath.size(); i++) {
+                currInvertedPathString += currInvertedPath.get(i);
+            }
+            textView.setText(currInvertedPathString);
         }
     }
 
@@ -255,37 +315,61 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * else we simply increment pathIdx and thus the next path string will display
      */
     public void onNextClick(View view) {
-        this.pathIdx = this.pathIdx + 1;
-        if (pathStrings.size() == this.pathIdx){
+
+        if (!calcNextStep()){
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
         } else {
             TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = pathStrings.get(pathIdx);
-            textView.setText(pathString);
+            String currPathString = "";
+            for (int i = 0; i < currPath.size(); i++) {
+                currPathString += currPath.get(i);
+            }
+            textView.setText(currPathString);
         }
     }
-
     /**
      * @description: Upon Next btn clicked, if pathIdx is at end of path string we go to end screen,
      * else we simply increment pathIdx and thus the next path string will display
      */
     public void onSkipClick(View view) {
-        //this skips DIRECTION not EXHIBIT need to fix
-        /*if(this.pathIdx <= pathStrings.size() - 1){
-            this.pathIdx = this.pathIdx + 2;
-        }*/
-        Utilities.showSkipAlert(this, "Exhibit skipped!");
-        //this is essentially onNextClick
-        this.pathIdx = this.pathIdx + 1;
-        if (pathStrings.size() == this.pathIdx){
+        if (!calcSkipStep()) {
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
-        } else {
-            TextView textView = (TextView) findViewById(R.id.path_exhibit);
-            String pathString = pathStrings.get(pathIdx);
-            textView.setText(pathString);
         }
+
+        TextView textView = (TextView) findViewById(R.id.path_exhibit);
+        String currPathString = "";
+        for (int i = 0; i < currPath.size(); i++) {
+            currPathString += currPath.get(i);
+        }
+        textView.setText(currPathString);
+    }
+
+    /**
+     * @description: Skips next exhibit node
+     */
+    public boolean calcSkipStep() {
+        if (unvisited.size() == 1) return false;
+
+        for (int i = 0; i < unvisited.size(); i++) {
+            if (unvisited.get(i).id.equals(nextNode)) {
+                unvisited.remove(i);
+            }
+        }
+        Log.d("nextNode", nextNode);
+        nextNode = findNearestNeighbor(g, currNode, unvisited);
+        currPath = findCurrPath(currNode, nextNode, exhibits);
+
+        Log.d("calcSkipStep()", "from " + currNode + " to " + nextNode);
+        Log.d("unvistedInSkipStep", unvisited.toString());
+
+        return true;
+    }
+
+    public void onPlanClick(View view) {
+        Intent intent = new Intent(this, ExhibitPlanner.class);
+        startActivity(intent);
     }
 
     /**

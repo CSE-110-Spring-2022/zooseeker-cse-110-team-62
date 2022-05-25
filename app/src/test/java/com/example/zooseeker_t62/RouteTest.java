@@ -57,4 +57,24 @@ public class RouteTest {
         String name = RouteDirectionsActivity.getNameFromID("two", exhibits);
         org.junit.Assert.assertEquals("2", name);
     }
+
+    /**
+     * @Description: finds the entrance and tests to see if it is of kind "gate"
+     */
+    @Test
+    public void testFindEntranceExists() {
+        List<ExhibitItem> exhibits = new ArrayList<ExhibitItem>();
+        String[] tag = {""};
+        for(int i = 0; i < 10; i++){
+            ExhibitItem exhibit = new ExhibitItem("", "exhibit", "exhibit", "", tag, 0.0, 0.0);
+            exhibits.add(exhibit);
+        }
+        String expectedID = "expected_gate";
+        exhibits.add(new ExhibitItem(expectedID, "", "gate","", tag, 0.0, 0.0));
+        org.junit.Assert.assertEquals(expectedID, RouteDirectionsActivity.findEntrance(exhibits));
+
+        exhibits.remove(exhibits.size() - 1);
+        org.junit.Assert.assertEquals(null, RouteDirectionsActivity.findEntrance(exhibits));
+
+    }
 }
