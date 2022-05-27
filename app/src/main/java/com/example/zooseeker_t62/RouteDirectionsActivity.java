@@ -158,6 +158,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 
         String prevNode = visited.peek().id;
+        if (prevNode.equals(currNode)) {
+            visited.pop();
+            prevNode = visited.peek().id;
+        }
         currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
 
         Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
@@ -358,6 +362,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             }
         }
         Log.d("nextNode", nextNode);
+
+        currNode = visited.peek().id;
         nextNode = findNearestNeighbor(g, currNode, unvisited);
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
