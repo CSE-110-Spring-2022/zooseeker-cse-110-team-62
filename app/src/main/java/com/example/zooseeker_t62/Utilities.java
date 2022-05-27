@@ -18,4 +18,20 @@ public class Utilities {
         AlertDialog alertDialog = alertBuilder.create();
         alertDialog.show();
     }
+
+    public static void showSkipAlert(Activity activity, String message) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(activity);
+
+        alertBuilder
+                .setTitle("Skip Exhibit")
+                .setMessage(message)
+                .setPositiveButton("Ok", (dialog,id) -> {
+                    dialog.cancel();
+
+                })
+                .setCancelable(true);
+
+        AlertDialog alertDialog = alertBuilder.create();
+        alertDialog.show();
+    }
 }

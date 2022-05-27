@@ -31,6 +31,7 @@
 <!--        app:layout_constraintStart_toEndOf="@+id/previous"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/path_exhibit"-->
 <!--        app:layout_constraintVertical_bias="0.733" />-->
+
     <Button
         android:id="@+id/previous"
         android:layout_width="wrap_content"
@@ -39,10 +40,10 @@
         android:text="@string/previous_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintHorizontal_bias="0.052"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.893" />
+        app:layout_constraintVertical_bias="0.891" />
 
     <Button
         android:id="@+id/next"
@@ -55,19 +56,21 @@
         app:layout_constraintHorizontal_bias="0.916"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.893" />
+        app:layout_constraintVertical_bias="0.891" />
 
-    <TextView
-        android:id="@+id/finish_text"
-        android:layout_width="211dp"
-        android:layout_height="92dp"
-        android:text="@string/route_completion"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/previous"
+    <Button
+        android:id="@+id/skipBTN"
+        android:layout_width="84dp"
+        android:layout_height="50dp"
+        android:onClick="onSkipClick"
+        android:text="Skip"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/path_exhibit"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.894" />
 
     <Button
         android:id="@+id/see_list"
