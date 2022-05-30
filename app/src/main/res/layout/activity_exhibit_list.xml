@@ -77,7 +77,7 @@
         android:layout_marginBottom="35dp"
         android:text="Clear"
         android:textSize="9sp"
-        android:onClick="methodName"
+        android:onClick="onClearClicked"
         app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
         app:layout_constraintEnd_toStartOf="@+id/plan_text"
         app:layout_constraintHorizontal_bias="1.0"

@@ -90,6 +90,14 @@ public class ExhibitActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
+
+    public void onClearClicked(View view) {
+        List<ExhibitItem> items = new ExhibitAdapter(this).getExhibitItems();
+        for (ExhibitItem e : items) {
+            viewModel.deleteExhibit(e);
+        }
+    }
+
     /**
      * @description: Handles the opening of the new direction/route Activity
      */
