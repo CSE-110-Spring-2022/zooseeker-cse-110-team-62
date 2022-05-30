@@ -5,6 +5,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,6 +34,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description: Uses our algorithm to calculate optimal route of exhibit paths
@@ -62,6 +66,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private List<ExhibitItem> exhibits;
     private List<ExhibitItem> unvisited;
     private Stack<ExhibitItem> visited;
+    private LocationModel model;
 
 
     @Override
@@ -69,6 +74,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_directions);
 
+        model = new ViewModelProvider(this).get(LocationModel.class);
+        //var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        //var provider = LocationManager.GPS_PROVIDER;
+        //model.addLocationProviderSource(locationManager, provider);
         exhibits = getPlannerExhibits();
 
         //Log.d("RouteDirectionsActivity.java onCreate", exhibits.toString());
@@ -378,11 +387,38 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onCoordUpdateClick(View view) {
+        //Log.d("onCoordUpdateClick()", view.toString());
+        TextView coordsText = findViewById(R.id.coords_edit_txt);
+
+        Log.d("onCoordUpdateClick()", coordsText.getText().toString());
+        String[] coords = coordsText.getText().toString().split(",");
+        double coordLat = Double.parseDouble(coords[0]);
+        double coordLong = Double.parseDouble(coords[1]);
+
+        Log.d("onCoordUpdateClick()", "latitude: " + coordLat + ", longitude: " + coordLong);
+
+        Coord updatedCoords = new Coord(coordLat, coordLong);
+        mockLocation(updatedCoords);
+
+        model.getLastKnownCoords().observe(this, (coord) -> Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord)));
+    }
+
     /**
      * @description: Proper lifecycle cleanup
      */
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @VisibleForTesting
+    public void mockLocation(Coord coords) {
+        model.mockLocation(coords);
+    }
+
+    @VisibleForTesting
+    public Future<?> mockRoute(List<Coord> route, long delay, TimeUnit unit) {
+        return model.mockRoute(route, delay, unit);
     }
 }
