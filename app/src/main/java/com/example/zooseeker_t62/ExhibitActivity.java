@@ -92,8 +92,10 @@ public class ExhibitActivity extends AppCompatActivity {
     }
 
     public void onClearClicked(View view) {
-        List<ExhibitItem> items = new ExhibitAdapter(this).getExhibitItems();
+        List<ExhibitItem> items = viewModel.getList();
+        Log.d("andrew", items.toString());
         for (ExhibitItem e : items) {
+            Log.d("andrew, jay", e.toString());
             viewModel.deleteExhibit(e);
         }
     }
