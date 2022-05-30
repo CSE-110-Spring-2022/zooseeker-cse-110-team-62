@@ -11,7 +11,7 @@
         android:layout_height="251dp"
         android:gravity="center"
         android:text="TextView"
-        android:textSize="24sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

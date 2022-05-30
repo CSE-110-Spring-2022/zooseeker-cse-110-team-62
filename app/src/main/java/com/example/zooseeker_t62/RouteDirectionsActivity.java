@@ -1,28 +1,20 @@
 package com.example.zooseeker_t62;
 
-import android.app.AlertDialog;
-import android.app.Instrumentation;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 //import androidx.test.core.app.ApplicationProvider;
 //import androidx.test.platform.app.InstrumentationRegistry;
 
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 
 import org.jgrapht.Graph;
@@ -30,9 +22,6 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +73,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         loadGraphData();
 
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
 
         unvisited = new ArrayList<>();
 
@@ -214,9 +203,11 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * @description: find exhibit distance from entrance
      */
     public static String findExhibitDist(Context context, String entrance, String id) {
-        Graph<String, IdentifiedWeightedEdge> g = ZooData.loadZooGraphJSON("sample_ms1_demo_zoo_graph.json", context);
-        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON("sample_ms1_demo_node_info.json", context);
-        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON("sample_ms1_demo_edge_info.json", context);
+        Graph<String, IdentifiedWeightedEdge> g = ZooData.loadZooGraphJSON("sample_ms2_zoo_graph.json", context);
+        Map<String, ZooData.VertexInfo> vInfo = ZooData.loadVertexInfoJSON("sample_ms2_exhibit_info.json", context);
+        Map<String, ZooData.EdgeInfo> eInfo = ZooData.loadEdgeInfoJSON("sample_ms2_trail_info.json", context);
+
+        Log.d("RouteDirectionsActivity", "entrance: " + entrance + " id: " + id);
 
         GraphPath<String, IdentifiedWeightedEdge> path = DijkstraShortestPath.findPathBetween(g, entrance, id);
 
@@ -232,9 +223,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      */
     public boolean loadGraphData() {
         try {
-            g = ZooData.loadZooGraphJSON("sample_ms1_demo_zoo_graph.json", this);
-            vInfo = ZooData.loadVertexInfoJSON("sample_ms1_demo_node_info.json", this);
-            eInfo = ZooData.loadEdgeInfoJSON("sample_ms1_demo_edge_info.json", this);
+            g = ZooData.loadZooGraphJSON("sample_ms2_zoo_graph.json", this);
+            vInfo = ZooData.loadVertexInfoJSON("sample_ms2_exhibit_info.json", this);
+            eInfo = ZooData.loadEdgeInfoJSON("sample_ms2_trail_info.json", this);
         }
         catch (Exception e) {
             return false;
@@ -308,7 +299,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * we simply decrement pathIdx and thus the previous path string will display
      */
     public void onPrevClick(View view) {
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
         if (!calcPrevStep()) {
 //            Log.d("test", "returns false");
             Intent intent = new Intent(this, ExhibitActivity.class);
