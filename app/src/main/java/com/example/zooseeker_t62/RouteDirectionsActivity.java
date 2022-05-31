@@ -64,6 +64,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private LocationModel model;
     private ExhibitItem closestExhibit;
     private List<ExhibitItem> allExhibits;
+    private ExhibitItem nearestNodeByLocation;
 
 
     @Override
@@ -117,13 +118,32 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     public void updateUserLocation() {
         model.getLastKnownCoords().observe(this, (coord) -> {
             Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord));
-            this.closestExhibit = findClosestNodeByLocation(coord);
+
+            if (this.closestExhibit != null) {
+                boolean isUnique = true;
+                for (ExhibitItem visitedExhibit : visited) {
+                    if (visitedExhibit.id.equals(this.closestExhibit.id)) {
+                        isUnique = false;
+                    }
+                }
+                if (isUnique) {
+                    visited.push(this.closestExhibit);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        String currID = unvisited.get(i).id;
+                        if (currID.equals(this.closestExhibit.id)) {
+                            unvisited.remove(i);
+                        }
+                    }
+                }
+            }
+
+            this.closestExhibit = findNearestUnvisitedPlannedExhibit(coord);
 
             offerReplan(coord);
         });
     }
 
-    public ExhibitItem findClosestNodeByLocation(Coord coord) {
+    public ExhibitItem findNearestUnvisitedPlannedExhibit(Coord coord) {
         ExhibitItem minNode = null;
         double minDistance = Double.MAX_VALUE;
         for (ExhibitItem unvisitedExhibit : unvisited) {
@@ -151,10 +171,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     public void offerReplan(Coord coord) {
         if (this.closestExhibit == null) return;
-        if (!this.closestExhibit.id.equals(currNode)) {
-            inflatePopup();
-            ExhibitItem nearestNodeByLocation = findNearestNodeByLocation(coord);
 
+        if (!this.closestExhibit.id.equals(currNode) && !this.closestExhibit.id.equals(nextNode)) {
+            nearestNodeByLocation = findNearestNodeByLocation(coord);
+            inflatePopup();
         }
     }
 
@@ -162,7 +182,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         ExhibitItem minNode = null;
         double minDistance = Double.MAX_VALUE;
         for (ExhibitItem node : allExhibits) {
-            Log.d("findNearestNodeByLocation()", "node: " + node.toString());
+//            Log.d("findNearestNodeByLocation()", "node: " + node.toString());
             if (minNode == null) {
                 minNode = node;
                 minDistance = calcDistance(coord, node);
@@ -177,6 +197,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 minNode = node;
             }
         }
+
+        Log.d("minNode", minNode.toString());
+
         return minNode;
     }
 
@@ -211,14 +234,34 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                nextNode = closestExhibit.id;
 
+                currNode = nearestNodeByLocation.id;
+                currPath = findCurrPath(currNode, nextNode, exhibits);
+
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                textView.setText(currPathString);
+                popupWindow.dismiss();
             }
         });
 
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                currNode = nearestNodeByLocation.id;
+                currPath = findCurrPath(currNode, nextNode, exhibits);
 
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                textView.setText(currPathString);
+                popupWindow.dismiss();
             }
         });
     }
@@ -235,36 +278,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
-        for (int i = 0; i < exhibits.size(); i++) {
-            if (currNode.equals(exhibits.get(i).id)) {
-                visited.push(exhibits.get(i));
-            }
-        }
-
-
         nextNode = findNearestNeighbor(g, currNode, unvisited);
-
         Log.d("nextNode", nextNode);
-
         if (nextNode.equals("")) return false;
-
 
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
-        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
+//        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
-
-        // Remove from array once visited, no need to visit again
-        for (int i = 0; i < unvisited.size(); i++) {
-            if (currNode.equals(unvisited.get(i).id)) {
-                unvisited.remove(i);
-            }
-        }
-        currNode = nextNode;
-//        if (!isAtEntrance)
-//        else {
-//            isAtEntrance = false;
-//        }
         Log.d("calcNextStepStack()", visited.toString());
 
         return true;
