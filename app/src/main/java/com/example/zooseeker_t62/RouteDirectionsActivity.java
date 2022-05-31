@@ -157,6 +157,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         String prevNode = visited.peek().id;
         if (prevNode.equals(currNode)) {
+            if (visited.size() == 1) {
+                return false;
+            }
             visited.pop();
             prevNode = visited.peek().id;
         }
