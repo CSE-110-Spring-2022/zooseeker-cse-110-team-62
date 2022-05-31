@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 /**
  * @description: This class manages a database our other classes may interact with
  */
-@Database(entities = {ExhibitItem.class}, version = 4)
+@Database(entities = {ExhibitItem.class}, version = 2)
 @TypeConverters({Converters.class})
 public abstract class ExhibitDatabase extends RoomDatabase {
     private static ExhibitDatabase singleton = null;

@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -22,8 +23,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     testOptions {
@@ -47,6 +48,15 @@ dependencies {
     implementation "org.jgrapht:jgrapht-io:$jgrapht_version"
 
     annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    def guava_version = "31.1-android"
+
+    // Guava: extended standard library for Java by Google.
+    //   - Streams: extra utilities for working with streams.
+    implementation "com.google.guava:guava:$guava_version"
+
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
 
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'

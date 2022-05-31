@@ -1,7 +1,6 @@
 package com.example.zooseeker_t62;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import org.json.JSONException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHolder> {
@@ -27,7 +25,7 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
     private Context context;
 
     public ExhibitAdapter(Context context) {
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(context, "sample_ms1_demo_node_info.json");
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(context, "sample_ms2_exhibit_info.json");
         this.entrance = RouteDirectionsActivity.findEntrance(allExhibits);
         this.context = context;
     }
@@ -109,8 +107,13 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
 
         public void setExhibitItem(ExhibitItem exhibitItem) throws JSONException {
             this.exhibitItem = exhibitItem;
+            String id = exhibitItem.id;
 
-            String distance = RouteDirectionsActivity.findExhibitDist(context, entrance, exhibitItem.id);
+            if (exhibitItem.group_id != null) {
+                id = exhibitItem.group_id;
+            }
+
+            String distance = RouteDirectionsActivity.findExhibitDist(context, entrance, id);
             if (distance == null) {
                 this.textView.setText(String.format("%s" , exhibitItem.name));
             } else {
