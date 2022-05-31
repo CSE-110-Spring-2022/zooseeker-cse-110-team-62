@@ -26,6 +26,10 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
 
+
+      - name: Touch local properties
+        run: touch local.properties
+
       - name: Unit Test
         run: ./gradlew testDebugUnitTest
 
@@ -53,5 +57,3 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
 
-      - name: Touch local properties
-        run: touch local.properties
