@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 public class RouteDirectionsActivity extends AppCompatActivity {
     public ExhibitViewModel viewModel;
 
+    private static String YOU_ARE_HERE = "You are here!";
+
     private int pathIdx;
     private java.util.Locale Locale;
 
@@ -115,9 +117,40 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         updateUserLocation();
     }
 
+    public void updateCurrent(Coord coord) {
+        String oldCurrent = currNode;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem exhibit : exhibits) {
+            double distance = calcDistance(coord, exhibit);
+            if (distance < minDistance) {
+                minDistance = distance;
+                currNode = exhibit.id;
+            }
+        }
+
+        if (!oldCurrent.equals(currNode)) {
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
+            String currPathString = "";
+            for (int i = 0; i < currPath.size(); i++) {
+                currPathString += currPath.get(i);
+            }
+
+            if (currPathString.equals("")) {
+                currPathString = YOU_ARE_HERE;
+            }
+            textView.setText(currPathString);
+        }
+
+        Log.d("updateCurrent()", "currNode: " + currNode);
+    }
+
     public void updateUserLocation() {
         model.getLastKnownCoords().observe(this, (coord) -> {
             Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord));
+
+            updateCurrent(coord);
 
             if (this.closestExhibit != null) {
                 boolean isUnique = true;
@@ -137,7 +170,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 }
             }
 
+            Log.d("updateUserLocation", "unvisited: " + unvisited.toString());
             this.closestExhibit = findNearestUnvisitedPlannedExhibit(coord);
+
+            Log.d("updateUserLocation", "this.closestExhibit: " + this.closestExhibit.toString());
 
             offerReplan(coord);
         });
@@ -172,9 +208,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     public void offerReplan(Coord coord) {
         if (this.closestExhibit == null) return;
 
-        if (!this.closestExhibit.id.equals(currNode) && !this.closestExhibit.id.equals(nextNode)) {
+        if (!this.closestExhibit.id.equals(nextNode)) {
             nearestNodeByLocation = findNearestNodeByLocation(coord);
             inflatePopup();
+            currNode = this.closestExhibit.id;
         }
     }
 
@@ -223,6 +260,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                String nearestNode = nearestNodeByLocation.id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
+
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    currPathString = YOU_ARE_HERE;
+                }
+                textView.setText(currPathString);
                 popupWindow.dismiss();
                 return true;
             }
@@ -236,13 +285,16 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 nextNode = closestExhibit.id;
 
-                currNode = nearestNodeByLocation.id;
-                currPath = findCurrPath(currNode, nextNode, exhibits);
+                String nearestNode = nearestNodeByLocation.id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
                 String currPathString = "";
                 for (int i = 0; i < currPath.size(); i++) {
                     currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    currPathString = YOU_ARE_HERE;
                 }
                 textView.setText(currPathString);
                 popupWindow.dismiss();
@@ -252,13 +304,16 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currNode = nearestNodeByLocation.id;
-                currPath = findCurrPath(currNode, nextNode, exhibits);
+                String nearestNode = nearestNodeByLocation.id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
                 String currPathString = "";
                 for (int i = 0; i < currPath.size(); i++) {
                     currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    currPathString = YOU_ARE_HERE;
                 }
                 textView.setText(currPathString);
                 popupWindow.dismiss();
@@ -286,7 +341,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 //        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
-        Log.d("calcNextStepStack()", visited.toString());
+        Log.d("calcNextStep()", "nextNode: " + nextNode);
 
         return true;
     }
@@ -296,30 +351,12 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
+        ExhibitItem poppedExhibit = visited.pop();
+        nextNode = poppedExhibit.id;
+        unvisited.add(poppedExhibit);
+        currInvertedPath = findCurrPath(currNode, nextNode, exhibits);
 
-        for (int i = 0; i < exhibits.size(); i++) {
-            if (currNode.equals(exhibits.get(i).id)) {
-                unvisited.add(exhibits.get(i));
-            }
-        }
-
-
-        String prevNode = visited.peek().id;
-        if (prevNode.equals(currNode)) {
-            if (visited.size() == 1) {
-                return false;
-            }
-            visited.pop();
-            prevNode = visited.peek().id;
-        }
-        currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
-
-        Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
-        visited.pop();
-
-        nextNode = currNode;
-        currNode = prevNode;
-        // Remove from array once visited, no need to visit again
+        Log.d("calcPrevStep()", "from " + currNode + " to " + nextNode);
         return true;
     }
 
@@ -462,6 +499,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             for (int i = 0; i < currInvertedPath.size(); i++) {
                 currInvertedPathString += currInvertedPath.get(i);
             }
+            if (currInvertedPathString.equals("")) {
+                currInvertedPathString = YOU_ARE_HERE;
+            }
             textView.setText(currInvertedPathString);
         }
     }
@@ -481,6 +521,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             for (int i = 0; i < currPath.size(); i++) {
                 currPathString += currPath.get(i);
             }
+            if (currPathString.equals("")) {
+                currPathString = YOU_ARE_HERE;
+            }
             textView.setText(currPathString);
         }
     }
@@ -498,6 +541,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         String currPathString = "";
         for (int i = 0; i < currPath.size(); i++) {
             currPathString += currPath.get(i);
+        }
+        if (currPathString.equals("")) {
+            currPathString = YOU_ARE_HERE;
         }
         textView.setText(currPathString);
     }
