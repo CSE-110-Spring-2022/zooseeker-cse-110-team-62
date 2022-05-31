@@ -87,6 +87,23 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ExampleVie
                     exhibitItem = currItem;
                 }
             }
+
+            //Log.d("SearchAdapter", "added: " + exhibitItem.toString());
+
+            if (exhibitItem.group_id != null) {
+                for (int i = 0; i < searchListFull.size(); i++) {
+                    String id = searchListFull.get(i).id;
+                    ExhibitItem currItem = searchListFull.get(i);
+
+                    //Log.d("searchListFull element", currItem.toString());
+                    if (id.equals(exhibitItem.group_id)) {
+                        exhibitItem = currItem;
+                        break;
+                    }
+                }
+            }
+
+            //Log.d("SearchAdapter", "added: " + exhibitItem.toString());
             onExhibitClicked.accept(exhibitItem);
             Utilities.showAlert((Activity) context, "Press OK to keep adding to the plan.");
         });
@@ -122,12 +139,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ExampleVie
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (ExhibitItem item : searchListFull) {
                     //for names
-                    if (item.getName().toLowerCase().contains(filterPattern) && item.getKind().equals("exhibit")) {
+                    if (item.getName().toLowerCase().contains(filterPattern) && (item.getKind().equals("exhibit")  || item.getKind().equals("exhibit_group"))) {
                         filteredList.add(item);
                     } else {
                         //for tags
                         for(int i = 0 ; i < item.getTags().length ; i++){
-                            if(item.getTags()[i].toLowerCase().contains(filterPattern) && item.getKind().equals("exhibit")){
+                            if(item.getTags()[i].toLowerCase().contains(filterPattern) && (item.getKind().equals("exhibit") || item.getKind().equals("exhibit_group"))){
                                 filteredList.add(item);
                                 break;
                             }

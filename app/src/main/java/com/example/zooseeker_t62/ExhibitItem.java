@@ -36,14 +36,14 @@ public class ExhibitItem {
 
     public double lat, lng;
 
-    public String parent_id;
+    public String group_id;
 
     /**
      * @description: The constructor
      */
-    public ExhibitItem(String id, String parent_id, String kind, String name, String[] tags, double lat, double lng){
+    public ExhibitItem(String id, String group_id, String kind, String name, String[] tags, double lat, double lng){
         this.id = id;
-        this.parent_id = parent_id;
+        this.group_id = group_id;
         this.kind = kind;
         this.name = name;
         this.tags = tags;
@@ -63,7 +63,7 @@ public class ExhibitItem {
                 ", tags=" + Arrays.toString(tags) + '\'' +
                 ", lat=" + lat + '\'' +
                 ", lng=" + lng + '\'' +
-                ", parent_id=" + parent_id +
+                ", group_id=" + group_id +
                 '}';
     }
 
@@ -73,6 +73,9 @@ public class ExhibitItem {
     public String getId() { return this.id; }
     public String getKind() {return this.kind; }
     public String[] getTags() { return this.tags; }
+    public double getLat() { return this.lat; }
+    public double getLng() { return this.lng; }
+    public String getGroup_id() { return this.group_id; }
 
     /**
      * @description: loads JSON from path and returns object
