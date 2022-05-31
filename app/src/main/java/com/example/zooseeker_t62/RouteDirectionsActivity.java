@@ -4,7 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
@@ -56,7 +62,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private List<ExhibitItem> unvisited;
     private Stack<ExhibitItem> visited;
     private LocationModel model;
-    private ExhibitItem closestNode;
+    private ExhibitItem closestExhibit;
+    private List<ExhibitItem> allExhibits;
 
 
     @Override
@@ -74,7 +81,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         loadGraphData();
 
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
 
         ExhibitItem entrance = null;
 
@@ -83,7 +90,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         for (int i = 0; i < allExhibits.size(); i++) {
             if (allExhibits.get(i).kind.equals("gate")) {
                 entrance = allExhibits.get(i);
-                unvisited.add(allExhibits.get(i));
                 exhibits.add(allExhibits.get(i));
             }
         }
@@ -91,6 +97,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         for (ExhibitItem item : exhibits) {
             unvisited.add(item);
         }
+
+        Log.d("unvisited", unvisited.toString());
 
         currNode = findEntrance(allExhibits);
         mockLocation(new Coord(entrance.getLat(), entrance.getLng()));
@@ -109,7 +117,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     public void updateUserLocation() {
         model.getLastKnownCoords().observe(this, (coord) -> {
             Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord));
-            this.closestNode = findClosestNodeByLocation(coord);
+            this.closestExhibit = findClosestNodeByLocation(coord);
+
+            offerReplan(coord);
         });
     }
 
@@ -117,15 +127,100 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         ExhibitItem minNode = null;
         double minDistance = Double.MAX_VALUE;
         for (ExhibitItem unvisitedExhibit : unvisited) {
+            Log.d("findClosestNodeByLocation()", "unvisitedExhibit: " + unvisitedExhibit.toString());
             if (minNode == null) {
                 minNode = unvisitedExhibit;
+                minDistance = calcDistance(coord, unvisitedExhibit);
                 continue;
             }
 
             double distance = calcDistance(coord, unvisitedExhibit);
+
+            Log.d("distance", "" + distance);
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = unvisitedExhibit;
+            }
         }
 
+        Log.d("minNode", minNode.toString());
+        Log.d("currNode", currNode);
+
         return minNode;
+    }
+
+    public void offerReplan(Coord coord) {
+        if (this.closestExhibit == null) return;
+        if (!this.closestExhibit.id.equals(currNode)) {
+            inflatePopup();
+            ExhibitItem nearestNodeByLocation = findNearestNodeByLocation(coord);
+
+        }
+    }
+
+    public ExhibitItem findNearestNodeByLocation(Coord coord) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem node : allExhibits) {
+            Log.d("findNearestNodeByLocation()", "node: " + node.toString());
+            if (minNode == null) {
+                minNode = node;
+                minDistance = calcDistance(coord, node);
+                continue;
+            }
+
+            double distance = calcDistance(coord, node);
+
+            Log.d("distance", "" + distance);
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = node;
+            }
+        }
+        return minNode;
+    }
+
+    public void inflatePopup() {
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.replan_popup, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(findViewById(R.id.route_dir_layout), Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+        Button accept = popupView.findViewById(R.id.accept_replan_btn);
+        Button reject = popupView.findViewById(R.id.reject_replan_btn);
+
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     public double calcDistance(Coord coord, ExhibitItem exhibit) {
