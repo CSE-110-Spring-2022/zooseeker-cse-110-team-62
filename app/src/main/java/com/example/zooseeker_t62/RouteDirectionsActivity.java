@@ -687,7 +687,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         Log.d("nextNode", nextNode);
 
-        currNode = visited.peek().id;
         nextNode = findNearestNeighbor(g, currNode, unvisited);
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
