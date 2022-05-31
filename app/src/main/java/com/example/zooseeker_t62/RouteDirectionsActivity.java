@@ -56,6 +56,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private List<ExhibitItem> unvisited;
     private Stack<ExhibitItem> visited;
     private LocationModel model;
+    private ExhibitItem closestNode;
 
 
     @Override
@@ -75,10 +76,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
 
+        ExhibitItem entrance = null;
+
         unvisited = new ArrayList<>();
 
         for (int i = 0; i < allExhibits.size(); i++) {
             if (allExhibits.get(i).kind.equals("gate")) {
+                entrance = allExhibits.get(i);
                 unvisited.add(allExhibits.get(i));
                 exhibits.add(allExhibits.get(i));
             }
@@ -89,6 +93,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
 
         currNode = findEntrance(allExhibits);
+        mockLocation(new Coord(entrance.getLat(), entrance.getLng()));
         isAtEntrance = true;
 
         visited = new Stack<>();
@@ -97,6 +102,34 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(currPath.toString());
+
+        updateUserLocation();
+    }
+
+    public void updateUserLocation() {
+        model.getLastKnownCoords().observe(this, (coord) -> {
+            Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord));
+            this.closestNode = findClosestNodeByLocation(coord);
+        });
+    }
+
+    public ExhibitItem findClosestNodeByLocation(Coord coord) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem unvisitedExhibit : unvisited) {
+            if (minNode == null) {
+                minNode = unvisitedExhibit;
+                continue;
+            }
+
+            double distance = calcDistance(coord, unvisitedExhibit);
+        }
+
+        return minNode;
+    }
+
+    public double calcDistance(Coord coord, ExhibitItem exhibit) {
+        return Math.sqrt(Math.pow(coord.lat - exhibit.getLat(), 2) + Math.pow(coord.lng - exhibit.getLng(), 2));
     }
 
     /**
@@ -394,8 +427,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         Coord updatedCoords = new Coord(coordLat, coordLong);
         mockLocation(updatedCoords);
-
-        model.getLastKnownCoords().observe(this, (coord) -> Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord)));
     }
 
     /**
