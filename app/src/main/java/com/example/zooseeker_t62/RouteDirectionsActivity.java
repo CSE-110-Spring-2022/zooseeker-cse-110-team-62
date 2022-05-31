@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
@@ -122,8 +124,11 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         if (nextNode.equals("")) return false;
 
-
-        currPath = findCurrPath(currNode, nextNode, exhibits);
+        if(SettingsPage.getRouteType()){
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+        } else {
+            currPath = findCurrPathBrief(currNode, nextNode, exhibits);
+        }
 
         Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
@@ -144,6 +149,30 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return true;
     }
 
+    public List<String> findCurrPathBrief(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        int sum = 0;
+        String sourceName = null;
+        String targetName = null;
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+            sum += g.getEdgeWeight(edge);
+        }
+        String pathString = String.format("Walk %s meters from %s to %s.", sum, sourceName, targetName);
+        Log.d("path", pathString);
+        currPath.add(pathString);
+        return currPath;
+    }
+
     public boolean calcPrevStep() {
         if (visited == null || visited.size() <= 0) {
             return false;
@@ -162,7 +191,11 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             visited.pop();
             prevNode = visited.peek().id;
         }
-        currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
+        if(SettingsPage.getRouteType()){
+            currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
+        } else {
+            currInvertedPath = findCurrPathBrief(currNode, prevNode, exhibits);
+        }
 
         Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
         visited.pop();

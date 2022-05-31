@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -51,6 +52,15 @@ public class SearchActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(ExhibitViewModel.class);
         initRecyclerView();
+
+        Button settings = (Button) findViewById(R.id.settings_button);
+        settings.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchActivity.this, SettingsPage.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -114,4 +124,5 @@ public class SearchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }

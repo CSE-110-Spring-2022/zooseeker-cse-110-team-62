@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zooseeker_T62">
         <activity
+            android:name=".SettingsPage"
+            android:exported="false" />
+        <activity
             android:name=".SearchActivity"
             android:exported="false" />
         <activity
@@ -26,16 +29,13 @@
             android:exported="false" />
         <activity
             android:name=".ExhibitActivity"
-            android:exported="false" >
-        </activity>
+            android:exported="false"></activity>
         <activity
             android:name=".ExhibitPlanner"
             android:exported="false" />
         <activity
             android:name=".ExitActivity"
-            android:exported="false" >
-        </activity>
+            android:exported="false"></activity>
     </application>
-
 
 </manifest>
