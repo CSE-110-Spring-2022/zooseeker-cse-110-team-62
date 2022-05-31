@@ -57,6 +57,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     private boolean isAtEntrance;
     private String currNode;
+    private String prevNextNode;
     private String nextNode;
     private List<String> currPath;
     private List<String> currInvertedPath;
@@ -89,6 +90,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         ExhibitItem entrance = null;
 
         unvisited = new ArrayList<>();
+        visited = new Stack<>();
 
         for (int i = 0; i < allExhibits.size(); i++) {
             if (allExhibits.get(i).kind.equals("gate")) {
@@ -101,13 +103,22 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             unvisited.add(item);
         }
 
+        for (int i = 0; i < unvisited.size(); i++) {
+            if (unvisited.get(i).kind.equals("gate")) {
+                visited.push(unvisited.get(i));
+                unvisited.remove(i);
+                break;
+            }
+        }
+
         Log.d("unvisited", unvisited.toString());
 
         currNode = findEntrance(allExhibits);
+        prevNextNode = currNode;
         mockLocation(new Coord(entrance.getLat(), entrance.getLng()));
         isAtEntrance = true;
 
-        visited = new Stack<>();
+
 
         calcNextStep();
 
@@ -115,6 +126,15 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         textView.setText(currPath.toString());
 
         updateUserLocation();
+    }
+
+    public ExhibitItem findExhibitById(String id) {
+        for (ExhibitItem item : exhibits) {
+            if (item.id.equals(id)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public void updateCurrent(Coord coord) {
@@ -139,6 +159,31 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             if (currPathString.equals("")) {
                 currPathString = YOU_ARE_HERE;
+                ExhibitItem currExhibit = findExhibitById(currNode);
+                boolean inUnvisited = false;
+                for (int i = 0; i < unvisited.size(); i++) {
+                    if (currExhibit.id.equals(unvisited.get(i).id)) {
+                        inUnvisited = true;
+                        break;
+                    }
+                }
+
+                if (inUnvisited) {
+                    this.visited.push(currExhibit);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (currExhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    unvisited.add(currExhibit);
+                }
+
+                Log.d("updateCurrent()", "visited: " + visited.toString());
+                Log.d("updateCurrent()", "unvisited: " + unvisited.toString());
+
             }
             textView.setText(currPathString);
         }
@@ -152,25 +197,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             updateCurrent(coord);
 
-            if (this.closestExhibit != null) {
-                boolean isUnique = true;
-                for (ExhibitItem visitedExhibit : visited) {
-                    if (visitedExhibit.id.equals(this.closestExhibit.id)) {
-                        isUnique = false;
-                    }
-                }
-                if (isUnique) {
-                    visited.push(this.closestExhibit);
-                    for (int i = 0; i < unvisited.size(); i++) {
-                        String currID = unvisited.get(i).id;
-                        if (currID.equals(this.closestExhibit.id)) {
-                            unvisited.remove(i);
-                        }
-                    }
-                }
-            }
-
             Log.d("updateUserLocation", "unvisited: " + unvisited.toString());
+            Log.d("updateUserLocation", "visited: " + visited.toString());
             this.closestExhibit = findNearestUnvisitedPlannedExhibit(coord);
 
             Log.d("updateUserLocation", "this.closestExhibit: " + this.closestExhibit.toString());
@@ -183,7 +211,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         ExhibitItem minNode = null;
         double minDistance = Double.MAX_VALUE;
         for (ExhibitItem unvisitedExhibit : unvisited) {
-            Log.d("findClosestNodeByLocation()", "unvisitedExhibit: " + unvisitedExhibit.toString());
+            //Log.d("findClosestNodeByLocation()", "unvisitedExhibit: " + unvisitedExhibit.toString());
             if (minNode == null) {
                 minNode = unvisitedExhibit;
                 minDistance = calcDistance(coord, unvisitedExhibit);
@@ -192,10 +220,42 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             double distance = calcDistance(coord, unvisitedExhibit);
 
-            Log.d("distance", "" + distance);
+            //Log.d("distance", "" + distance);
             if (distance < minDistance) {
                 minDistance = distance;
                 minNode = unvisitedExhibit;
+            }
+        }
+
+        if (minNode == null) {
+            Intent intent = new Intent(this, ExitActivity.class);
+            startActivity(intent);
+            return findExhibitById(findEntrance(allExhibits));
+        }
+
+        //Log.d("minNode", minNode.toString());
+        //Log.d("currNode", currNode);
+
+        return minNode;
+    }
+
+    public ExhibitItem findNearestPlannedExhibit(Coord coord) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem exhibit : exhibits) {
+            //Log.d("findClosestNodeByLocation()", "unvisitedExhibit: " + unvisitedExhibit.toString());
+            if (minNode == null) {
+                minNode = exhibit;
+                minDistance = calcDistance(coord, exhibit);
+                continue;
+            }
+
+            double distance = calcDistance(coord, exhibit);
+
+            //Log.d("distance", "" + distance);
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = exhibit;
             }
         }
 
@@ -206,12 +266,20 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     public void offerReplan(Coord coord) {
-        if (this.closestExhibit == null) return;
+        if (this.closestExhibit == null || this.visited.size() == 0) return;
 
-        if (!this.closestExhibit.id.equals(nextNode)) {
+        Log.d("offerReplan()", "currNode: " + currNode);
+        Log.d("offerReplan()", "prevNextNode: " + prevNextNode);
+
+        ExhibitItem nearestExhibit = findNearestPlannedExhibit(coord);
+        ExhibitItem nearestUnvisitedExhibit = findNearestUnvisitedPlannedExhibit(coord);
+
+        Log.d("offerReplan()", "nearestExhibit: " + nearestExhibit.toString());
+        Log.d("offerReplan()", "this.closestExhibit: " + this.closestExhibit.toString());
+        if (this.closestExhibit.id.equals(nearestExhibit.id) && !this.closestExhibit.id.equals(nextNode)) {
             nearestNodeByLocation = findNearestNodeByLocation(coord);
-            inflatePopup();
-            currNode = this.closestExhibit.id;
+            inflatePopup(coord);
+            //currNode = this.closestExhibit.id;
         }
     }
 
@@ -228,7 +296,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
             double distance = calcDistance(coord, node);
 
-            Log.d("distance", "" + distance);
+            //Log.d("distance", "" + distance);
             if (distance < minDistance) {
                 minDistance = distance;
                 minNode = node;
@@ -240,7 +308,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return minNode;
     }
 
-    public void inflatePopup() {
+    public void inflatePopup(Coord coord) {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -260,7 +328,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                String nearestNode = nearestNodeByLocation.id;
+                String nearestNode = findNearestNodeByLocation(coord).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -269,7 +337,19 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                     currPathString += currPath.get(i);
                 }
                 if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
+
                     currPathString = YOU_ARE_HERE;
+                }
+                else {
+                    currNode = nearestNode;
                 }
                 textView.setText(currPathString);
                 popupWindow.dismiss();
@@ -283,9 +363,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                nextNode = closestExhibit.id;
+                nextNode = findNearestUnvisitedPlannedExhibit(coord).id;
 
-                String nearestNode = nearestNodeByLocation.id;
+                String nearestNode = findNearestNodeByLocation(coord).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -294,7 +374,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                     currPathString += currPath.get(i);
                 }
                 if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
                     currPathString = YOU_ARE_HERE;
+                }
+                else {
+                    currNode = nearestNode;
                 }
                 textView.setText(currPathString);
                 popupWindow.dismiss();
@@ -304,7 +395,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nearestNode = nearestNodeByLocation.id;
+                String nearestNode = findNearestNodeByLocation(coord).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -313,7 +404,18 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                     currPathString += currPath.get(i);
                 }
                 if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
                     currPathString = YOU_ARE_HERE;
+                }
+                else {
+                    currNode = nearestNode;
                 }
                 textView.setText(currPathString);
                 popupWindow.dismiss();
@@ -333,9 +435,25 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
+        if (nextNode != null) {
+            prevNextNode = nextNode;
+        }
+        String oldNextNode = nextNode;
         nextNode = findNearestNeighbor(g, currNode, unvisited);
         Log.d("nextNode", nextNode);
         if (nextNode.equals("")) return false;
+
+        /*if (oldNextNode != null && oldNextNode.equals(nextNode)) {
+            ExhibitItem oldNextExhibit = findExhibitById(oldNextNode);
+            for (int i = 0; i < unvisited.size(); i++) {
+                if (oldNextExhibit.id.equals(unvisited.get(i).id)) {
+                    unvisited.remove(i);
+                    break;
+                }
+            }
+            nextNode = findNearestNeighbor(g, currNode, unvisited);
+            unvisited.add(oldNextExhibit);
+        }*/
 
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
@@ -351,12 +469,20 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
+        /*if (visited.size() == 1) {
+            if (visited.peek().kind.equals("gate")) {
+                return false;
+            }
+        }*/
+
         ExhibitItem poppedExhibit = visited.pop();
         nextNode = poppedExhibit.id;
-        unvisited.add(poppedExhibit);
+        //unvisited.add(poppedExhibit);
         currInvertedPath = findCurrPath(currNode, nextNode, exhibits);
 
         Log.d("calcPrevStep()", "from " + currNode + " to " + nextNode);
+        Log.d("calcPrevStep()", "visited: " + visited.toString());
+        Log.d("calcPrevStep()", "unvisited: " + unvisited.toString());
         return true;
     }
 
@@ -364,7 +490,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         List<String> currPath = new ArrayList<>();
         path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
-        String from = getNameFromID(currNode, exhibits);
+        String from = getNameFromID(currNode, allExhibits);
         if (from.equals("")) from = "Entrance and Exit Gate";
 
         /**
