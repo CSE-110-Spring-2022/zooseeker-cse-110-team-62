@@ -97,7 +97,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         visited = new Stack<>();
 
-        loadProfile();
 
         calcNextStep();
 
@@ -108,20 +107,35 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     public void loadProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        // SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
 
-        currNode = preferences.getString("curr", "");
-        nextNode = preferences.getString("next", "");
+        TinyDB tinydb = new TinyDB(this);
+
+        currNode = tinydb.getString("curr");
+        nextNode = tinydb.getString("next");
+
+        // tinydb.putString();
+
+        // currNode = preferences.getString("curr", "");
+        // nextNode = preferences.getString("next", "");
+    }
+
+    public void recreateRoute() {
+
     }
 
     public void saveProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        // SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        // SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putString("curr", currNode);
-        editor.putString("next", nextNode);
+        // editor.putString("curr", currNode);
+        // editor.putString("next", nextNode);
 
-        editor.apply();
+        // editor.apply();
+        TinyDB tinydb = new TinyDB(this);
+
+        tinydb.putString("curr", currNode);
+        tinydb.putString("next", nextNode);
     }
 
     /**
