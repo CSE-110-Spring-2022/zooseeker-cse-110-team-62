@@ -5,6 +5,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -69,6 +70,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_directions);
 
+
         exhibits = getPlannerExhibits();
 
         //Log.d("RouteDirectionsActivity.java onCreate", exhibits.toString());
@@ -95,10 +97,31 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         visited = new Stack<>();
 
+        loadProfile();
+
         calcNextStep();
 
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(currPath.toString());
+
+
+    }
+
+    public void loadProfile() {
+        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+
+        currNode = preferences.getString("curr", "");
+        nextNode = preferences.getString("next", "");
+    }
+
+    public void saveProfile() {
+        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString("curr", currNode);
+        editor.putString("next", nextNode);
+
+        editor.apply();
     }
 
     /**
@@ -384,5 +407,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        saveProfile();
     }
 }
