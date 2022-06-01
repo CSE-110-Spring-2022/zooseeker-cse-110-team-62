@@ -434,6 +434,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return Math.sqrt(Math.pow(coord.lat - exhibit.getLat(), 2) + Math.pow(coord.lng - exhibit.getLng(), 2));
     }
 
+    /**
+     * @description: Loads user's preference profile
+     */
     public void loadProfile() {
         //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
 
@@ -488,6 +491,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         Log.d("US5", "done recreating w/" + currNode);
     }
 
+    /**
+     * @description: Code to save user Profile in preferences
+     */
     public void saveProfile() {
         //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
         //SharedPreferences.Editor editor = preferences.edit();
