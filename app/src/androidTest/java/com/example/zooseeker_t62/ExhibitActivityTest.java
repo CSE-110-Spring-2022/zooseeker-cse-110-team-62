@@ -1,28 +1,20 @@
 package com.example.zooseeker_t62;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.DataInteraction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
@@ -50,7 +42,7 @@ public class ExhibitActivityTest {
                 .build();
         ExhibitDatabase.injectTestDatabase(testDb);
 
-        List<ExhibitItem> exhibits = ExhibitItem.loadJSON(context, "sample_node_info.json");
+        List<ExhibitItem> exhibits = ExhibitItem.loadJSON(context, "sample_ms2_exhibit_info.json");
         exhibitItemDao = testDb.exhibitItemDao();
         exhibitItemDao.insertAll(exhibits);
     }

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,14 +18,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.JsonParser;
-
-import org.json.*;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,8 +40,8 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_page);
 
 
-        List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_ms1_demo_node_info.json");
-        searchList = animals.stream().filter(animal -> animal.getKind().equals("exhibit")).collect(Collectors.toList());
+        List<ExhibitItem> animals = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        searchList = animals.stream().filter(animal -> animal.getKind().equals("exhibit") || animal.getKind().equals("exhibit_group")).collect(Collectors.toList());
 
         viewModel = new ViewModelProvider(this).get(ExhibitViewModel.class);
         initRecyclerView();
