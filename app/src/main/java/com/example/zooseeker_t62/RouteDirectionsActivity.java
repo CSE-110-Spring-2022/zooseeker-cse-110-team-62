@@ -280,13 +280,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         Log.d("offerReplan()", "nearestExhibit: " + nearestExhibit.toString());
         Log.d("offerReplan()", "this.closestExhibit: " + this.closestExhibit.toString());
         if (this.closestExhibit.id.equals(nearestExhibit.id) && !this.closestExhibit.id.equals(nextNode)) {
-            nearestNodeByLocation = findNearestNodeByLocation(coord);
+            nearestNodeByLocation = findNearestNodeByLocation(coord, allExhibits);
             inflatePopup(coord);
             //currNode = this.closestExhibit.id;
         }
     }
 
-    public ExhibitItem findNearestNodeByLocation(Coord coord) {
+    public static ExhibitItem findNearestNodeByLocation(Coord coord, List<ExhibitItem> allExhibits) {
         ExhibitItem minNode = null;
         double minDistance = Double.MAX_VALUE;
         for (ExhibitItem node : allExhibits) {
@@ -331,7 +331,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                String nearestNode = findNearestNodeByLocation(coord).id;
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -368,7 +368,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 nextNode = findNearestUnvisitedPlannedExhibit(coord).id;
 
-                String nearestNode = findNearestNodeByLocation(coord).id;
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -398,7 +398,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nearestNode = findNearestNodeByLocation(coord).id;
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
                 currPath = findCurrPath(nearestNode, nextNode, exhibits);
 
                 TextView textView = (TextView) findViewById(R.id.path_exhibit);
@@ -426,7 +426,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         });
     }
 
-    public double calcDistance(Coord coord, ExhibitItem exhibit) {
+    public static double calcDistance(Coord coord, ExhibitItem exhibit) {
         return Math.sqrt(Math.pow(coord.lat - exhibit.getLat(), 2) + Math.pow(coord.lng - exhibit.getLng(), 2));
     }
 

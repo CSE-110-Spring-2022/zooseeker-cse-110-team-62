@@ -78,4 +78,24 @@ public class RouteTest {
         org.junit.Assert.assertEquals(null, RouteDirectionsActivity.findEntrance(exhibits));
 
     }
+
+    @Test
+    public void testFindNearestNodeByLocation() {
+
+        List<ExhibitItem> exhibits = new ArrayList<>();
+        ExhibitItem exhibitOne = new ExhibitItem("one", null, "exhibit", "one", null, 1.0, 3.0);
+        ExhibitItem exhibitTwo = new ExhibitItem("two", null, "exhibit", "two", null, 10.0, 20.0);
+        ExhibitItem exhibitThree = new ExhibitItem("three", null, "exhibit", "three", null, -1.0, -1.0);
+
+        exhibits.add(exhibitOne);
+        exhibits.add(exhibitTwo);
+        exhibits.add(exhibitThree);
+
+        Coord coord = new Coord(0.0,0.0);
+
+        ExhibitItem nearest = RouteDirectionsActivity.findNearestNodeByLocation(coord, exhibits);
+
+        org.junit.Assert.assertEquals(exhibitThree.id, nearest.id);
+
+    }
 }
