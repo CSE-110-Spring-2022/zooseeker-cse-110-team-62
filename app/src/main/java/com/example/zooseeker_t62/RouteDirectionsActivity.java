@@ -111,12 +111,12 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
 
 
-        loadProfile();
+        //loadProfile();
 
         // if the currNode isn't the entrance upon restarting the app,
         // bring us back to where we were in the directions last time.
-        if (currNode != findEntrance(allExhibits))
-            recreateRoute();
+        //if (currNode != findEntrance(allExhibits))
+            //recreateRoute();
 
         for (int i = 0; i < unvisited.size(); i++) {
             if (unvisited.get(i).kind.equals("gate")) {
@@ -442,12 +442,41 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     public void loadProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
 
 
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
-        currNode = preferences.getString("curr", findEntrance(allExhibits));
-        Log.d("US5", "loading " + currNode);
+        //List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        //currNode = preferences.getString("curr", findEntrance(allExhibits));
+        /*
+        nextNode = preferences.getString("next", "");
+
+        String[] unvisitedS = preferences.getString("unvisited", "").split(",");
+        String[] exhibitS = preferences.getString("exhibits", "").split(",");
+        String[] visitedS = preferences.getString("visited", "").split(",");
+        String[] tempS = preferences.getString("tempVisited", "").split(",");
+
+        unvisited = new ArrayList<ExhibitItem>();
+        for (String s : unvisitedS) {
+            unvisited.add(findExhibitById(s));
+        }
+
+        exhibits = new ArrayList<ExhibitItem>();
+        for (String s : exhibitS) {
+            exhibits.add(findExhibitById(s));
+        }
+
+        visited = new Stack<ExhibitItem>();
+        for (int i = visitedS.length - 1; i <= 0; i++)
+            visited.push(findExhibitById(visitedS[i]));
+
+        tempVisited = new HashSet<String>();
+        for (String s : tempS) {
+            tempVisited.add(findExhibitById(s).toString());
+        }
+
+
+         */
+        //Log.d("US5", "loading " + currNode);
     }
 
     public void recreateRoute() {
@@ -460,15 +489,15 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 
         while (!currNode.equals(target)) {
-            calcNextStep();  // hanle all the visited data
+            calcNextStep();  // handle all the visited data
         }
 
         Log.d("US5", "done recreating w/" + currNode);
     }
 
     public void saveProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        //SharedPreferences.Editor editor = preferences.edit();
 
         SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
         SharedPreferences.Editor editor2 = mPrefs.edit();
@@ -476,10 +505,19 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         editor2.apply();
         Log.d("activitystart", mPrefs.getString("activity", "why"));
 
-        editor.putString("curr", currNode);
-        Log.d("US5", "saving " + currNode);
+        //editor.putString("curr", currNode);
+        //Log.d("US5", "saving " + currNode);
+        /*
+        editor.putString("next", nextNode);
 
-        editor.apply();
+        editor.putString("exhibits", Converters.idToString(exhibits));
+        editor.putString("unvisited", Converters.idToString(unvisited));
+
+        editor.putString("visited", Converters.idToString(visited));
+        editor.putString("tempVisited", Converters.idToString(tempVisited));
+         */
+
+        //editor.apply();
     }
 
     /**
@@ -519,7 +557,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 //        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
-        saveProfile();
+         saveProfile();
 
         Log.d("calcNextStep()", "nextNode: " + nextNode);
 
