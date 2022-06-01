@@ -20,6 +20,7 @@ import org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -41,7 +42,7 @@ public class RouteTest {
         }
 
         String nearestNeighbor = RouteDirectionsActivity.findNearestNeighbor(g, "one",
-                exhibits);
+                exhibits, new HashSet<String>());
 
         org.junit.Assert.assertEquals("two", nearestNeighbor);
     }
