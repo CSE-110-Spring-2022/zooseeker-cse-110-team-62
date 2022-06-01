@@ -38,6 +38,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchAdapter adapter;
     private List<ExhibitItem> searchList;
     public ExhibitViewModel viewModel;
+
     /**
      * @description: loadsSearchList Data --> creates viewModel --> creates recycler view
      */
@@ -57,8 +58,8 @@ public class SearchActivity extends AppCompatActivity {
         settings.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SearchActivity.this, SettingsPage.class);
-                startActivity(intent);
+                Intent settingsIntent = new Intent(SearchActivity.this, SettingsPage.class);
+                startActivity(settingsIntent);
             }
         });
     }

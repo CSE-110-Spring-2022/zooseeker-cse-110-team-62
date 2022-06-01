@@ -3,6 +3,7 @@ package com.example.zooseeker_t62;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,12 +23,13 @@ public class SettingsPage extends AppCompatActivity {
         home.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SettingsPage.this, SearchActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
         ToggleButton toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
+        SharedPreferences sharedPrefs = getSharedPreferences("com.example.zooseeker_t62", MODE_PRIVATE);
+        toggleButton.setChecked(sharedPrefs.getBoolean("toggleState", true));
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -38,6 +40,9 @@ public class SettingsPage extends AppCompatActivity {
                     setRouteType(false);
                     Log.d("tag", "false");
                 }
+                SharedPreferences.Editor editor = getSharedPreferences("com.example.zooseeker_t62", MODE_PRIVATE).edit();
+                editor.putBoolean("toggleState", isChecked);
+                editor.commit();
             }
         });
     }

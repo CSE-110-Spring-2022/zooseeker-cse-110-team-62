@@ -65,7 +65,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private List<ExhibitItem> unvisited;
     private Stack<ExhibitItem> visited;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
