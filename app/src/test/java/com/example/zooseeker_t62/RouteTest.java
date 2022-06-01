@@ -20,6 +20,7 @@ import org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -41,7 +42,7 @@ public class RouteTest {
         }
 
         String nearestNeighbor = RouteDirectionsActivity.findNearestNeighbor(g, "one",
-                exhibits);
+                exhibits, new HashSet<String>());
 
         org.junit.Assert.assertEquals("two", nearestNeighbor);
     }
@@ -75,6 +76,26 @@ public class RouteTest {
 
         exhibits.remove(exhibits.size() - 1);
         org.junit.Assert.assertEquals(null, RouteDirectionsActivity.findEntrance(exhibits));
+
+    }
+
+    @Test
+    public void testFindNearestNodeByLocation() {
+
+        List<ExhibitItem> exhibits = new ArrayList<>();
+        ExhibitItem exhibitOne = new ExhibitItem("one", null, "exhibit", "one", null, 1.0, 3.0);
+        ExhibitItem exhibitTwo = new ExhibitItem("two", null, "exhibit", "two", null, 10.0, 20.0);
+        ExhibitItem exhibitThree = new ExhibitItem("three", null, "exhibit", "three", null, -1.0, -1.0);
+
+        exhibits.add(exhibitOne);
+        exhibits.add(exhibitTwo);
+        exhibits.add(exhibitThree);
+
+        Coord coord = new Coord(0.0,0.0);
+
+        ExhibitItem nearest = RouteDirectionsActivity.findNearestNodeByLocation(coord, exhibits);
+
+        org.junit.Assert.assertEquals(exhibitThree.id, nearest.id);
 
     }
 }

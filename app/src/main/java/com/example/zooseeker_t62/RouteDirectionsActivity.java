@@ -5,8 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.jgrapht.Graph;
@@ -23,16 +34,13 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description: Uses our algorithm to calculate optimal route of exhibit paths
- * 1. Finds exhibit shortest distance away from start and runs dijkstras(entrance, foundExhibit)
- * 2. Once at that exhibit, re-evaluates and finds closestNearestNeighbor to this exhibit
- * 3. Once found, runs dijkstras(currExhibit, closestNearestNeighbor)
- * 4. Repeat until all exhibits are visited.
+ * @description: Directions Activity screen
  */
 public class RouteDirectionsActivity extends AppCompatActivity {
     public ExhibitViewModel viewModel;
@@ -48,7 +56,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
     private List<String> inversePathStrings;
 
-    private boolean isAtEntrance;
     private String currNode;
     private String nextNode;
     private List<String> currPath;
@@ -57,8 +64,10 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private List<ExhibitItem> unvisited;
     private Stack<ExhibitItem> visited;
     private LocationModel model;
-
-
+    private ExhibitItem closestExhibit;
+    private List<ExhibitItem> allExhibits;
+    private ExhibitItem nearestNodeByLocation;
+    private Set<String> tempVisited;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,54 +75,401 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 
         model = new ViewModelProvider(this).get(LocationModel.class);
-        //var locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        //var provider = LocationManager.GPS_PROVIDER;
-        //model.addLocationProviderSource(locationManager, provider);
 
         exhibits = getPlannerExhibits();
 
-        //Log.d("RouteDirectionsActivity.java onCreate", exhibits.toString());
-
         loadGraphData();
 
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
 
         unvisited = new ArrayList<>();
-
-        for (int i = 0; i < allExhibits.size(); i++) {
-            if (allExhibits.get(i).kind.equals("gate")) {
-                unvisited.add(allExhibits.get(i));
-                exhibits.add(allExhibits.get(i));
-            }
-        }
-
-        for (ExhibitItem item : exhibits) {
-            unvisited.add(item);
-        }
-
         visited = new Stack<>();
-        //currNode = findEntrance(allExhibits);
+        tempVisited = new HashSet<>();
 
-        loadProfile();
+        ExhibitItem entrance = setEntrance();
 
-        // if the currNode isn't the entrance upon restarting the app,
-        // bring us back to where we were in the directions last time.
-        if (currNode != findEntrance(allExhibits))
-            recreateRoute();
+        populateUnvisited();
+
+        addEntranceToVisited();
+
+        currNode = findEntrance(allExhibits);
+
+        mockLocation(new Coord(entrance.getLat(), entrance.getLng()));
 
         calcNextStep();
 
         TextView textView = (TextView) findViewById(R.id.path_exhibit);
         textView.setText(currPath.toString());
+
+        updateUserLocation();
+    }
+
+    /**
+     * @description: Sets entrance to kind equal to gate inside app
+     */
+    public ExhibitItem setEntrance() {
+        ExhibitItem entrance = null;
+        for (int i = 0; i < allExhibits.size(); i++) {
+            if (allExhibits.get(i).kind.equals("gate")) {
+                entrance = allExhibits.get(i);
+                exhibits.add(allExhibits.get(i));
+            }
+        }
+        return entrance;
+    }
+    /**
+     * @description: Populates our unvisited array with exhibit values
+     */
+    public void populateUnvisited() {
+        for (ExhibitItem item : exhibits) {
+            unvisited.add(item);
+        }
+
+    }
+    /**
+     * @description: Adds entrance node to visited and removes from unvisited
+     */
+    public void addEntranceToVisited() {
+        for (int i = 0; i < unvisited.size(); i++) {
+            if (unvisited.get(i).kind.equals("gate")) {
+                visited.push(unvisited.get(i));
+                unvisited.remove(i);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @description: Given exhibit ID, finds that ExhibitItem Object
+     */
+    public ExhibitItem findExhibitById(String id) {
+        for (ExhibitItem item : exhibits) {
+            if (item.id.equals(id)) {
+                return item;
+            }
+        }
+        return null;
+    }
+    /**
+     * @description: Whenever update button is pressed it updates currNode and vis/unvis status
+     */
+    public void updateCurrent(Coord coord) {
+        String oldCurrent = currNode;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem exhibit : exhibits) {
+            double distance = calcDistance(coord, exhibit);
+            if (distance < minDistance) {
+                minDistance = distance;
+                currNode = exhibit.id;
+            }
+        }
+
+        if (!oldCurrent.equals(currNode)) {
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+
+            TextView textView = (TextView) findViewById(R.id.path_exhibit);
+            String currPathString = "";
+            for (int i = 0; i < currPath.size(); i++) {
+                currPathString += currPath.get(i);
+            }
+
+            if (currPathString.equals("")) {
+                currPathString = "You are at " + currNode;
+                ExhibitItem currExhibit = findExhibitById(currNode);
+                boolean inUnvisited = false;
+                for (int i = 0; i < unvisited.size(); i++) {
+                    if (currExhibit.id.equals(unvisited.get(i).id)) {
+                        inUnvisited = true;
+                        break;
+                    }
+                }
+                if (inUnvisited) {
+                    this.visited.push(currExhibit);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (currExhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    unvisited.add(currExhibit);
+                }
+            }
+            textView.setText(currPathString);
+        }
+    }
+
+    /**
+     * @description: Whenever update button is pressed, closestExhibit gets changed
+     */
+    public void updateUserLocation() {
+        model.getLastKnownCoords().observe(this, (coord) -> {
+            tempVisited.clear();
+            updateCurrent(coord);
+
+            this.closestExhibit = findNearestUnvisitedPlannedExhibit(coord);
+
+            offerReplan(coord);
+        });
+    }
+
+    /**
+     * @description: algorithm for finding nearest unvisited exhibit in planner
+     */
+    public ExhibitItem findNearestUnvisitedPlannedExhibit(Coord coord) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem unvisitedExhibit : unvisited) {
+            if (minNode == null) {
+                minNode = unvisitedExhibit;
+                minDistance = calcDistance(coord, unvisitedExhibit);
+                continue;
+            }
+
+            double distance = calcDistance(coord, unvisitedExhibit);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = unvisitedExhibit;
+            }
+        }
+        if (minNode == null) {
+            Intent intent = new Intent(this, ExitActivity.class);
+            startActivity(intent);
+            return findExhibitById(findEntrance(allExhibits));
+        }
+        return minNode;
+    }
+
+    /**
+     * @description: Algorithm for finding nearest planned exhibit in planner
+     */
+    public ExhibitItem findNearestPlannedExhibit(Coord coord) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem exhibit : exhibits) {
+
+            if (minNode == null) {
+                minNode = exhibit;
+                minDistance = calcDistance(coord, exhibit);
+                continue;
+            }
+
+            double distance = calcDistance(coord, exhibit);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = exhibit;
+            }
+        }
+        return minNode;
+    }
+
+    /**
+     * @description: Method where popup shows up when user is off route
+     */
+    public void offerReplan(Coord coord) {
+        if (this.closestExhibit == null || this.visited.size() == 0) return;
+
+        ExhibitItem nearestExhibit = findNearestPlannedExhibit(coord);
+        ExhibitItem nearestUnvisitedExhibit = findNearestUnvisitedPlannedExhibit(coord);
+
+        if (this.closestExhibit.id.equals(nearestExhibit.id) && !this.closestExhibit.id.equals(nextNode)) {
+            nearestNodeByLocation = findNearestNodeByLocation(coord, allExhibits);
+            inflatePopup(coord);
+        }
+    }
+
+    /**
+     * @description: Algorithm for finding nearest node by location
+     */
+    public static ExhibitItem findNearestNodeByLocation(Coord coord, List<ExhibitItem> allExhibits) {
+        ExhibitItem minNode = null;
+        double minDistance = Double.MAX_VALUE;
+        for (ExhibitItem node : allExhibits) {
+            // Log.d("findNearestNodeByLocation()", "node: " + node.toString());
+            if (minNode == null) {
+                minNode = node;
+                minDistance = calcDistance(coord, node);
+                continue;
+            }
+
+            double distance = calcDistance(coord, node);
+            //Log.d("distance", "" + distance);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                minNode = node;
+            }
+        }
+
+        // Log.d("minNode", minNode.toString());
+
+        return minNode;
+    }
+
+    /**
+     * @description: This is how our modal shoes for replan
+     */
+    public void inflatePopup(Coord coord) {
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.replan_popup, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(findViewById(R.id.route_dir_layout), Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
+
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
+
+                    currPathString =  "You are at " + currNode;
+                }
+                else {
+                    currNode = nearestNode;
+                }
+                textView.setText(currPathString);
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+        Button accept = popupView.findViewById(R.id.accept_replan_btn);
+        Button reject = popupView.findViewById(R.id.reject_replan_btn);
+
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nextNode = findNearestUnvisitedPlannedExhibit(coord).id;
+
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
+
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
+                    currPathString = "You are at " + currNode;
+                }
+                else {
+                    currNode = nearestNode;
+                }
+                textView.setText(currPathString);
+                popupWindow.dismiss();
+            }
+        });
+
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String nearestNode = findNearestNodeByLocation(coord, allExhibits).id;
+                currPath = findCurrPath(nearestNode, nextNode, exhibits);
+
+                TextView textView = (TextView) findViewById(R.id.path_exhibit);
+                String currPathString = "";
+                for (int i = 0; i < currPath.size(); i++) {
+                    currPathString += currPath.get(i);
+                }
+                if (currPathString.equals("")) {
+                    ExhibitItem exhibit = findExhibitById(nearestNode);
+                    for (int i = 0; i < unvisited.size(); i++) {
+                        if (exhibit.id.equals(unvisited.get(i).id)) {
+                            unvisited.remove(i);
+                            break;
+                        }
+                    }
+                    visited.push(exhibit);
+                    currPathString = "You are at " + currNode;
+                }
+                else {
+                    currNode = nearestNode;
+                }
+                textView.setText(currPathString);
+                popupWindow.dismiss();
+            }
+        });
+    }
+
+    /**
+     * @description: Formula for calculating distance between two sets of long, lat points
+     */
+    public static double calcDistance(Coord coord, ExhibitItem exhibit) {
+        return Math.sqrt(Math.pow(coord.lat - exhibit.getLat(), 2) + Math.pow(coord.lng - exhibit.getLng(), 2));
     }
 
     public void loadProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
 
 
-        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
-        currNode = preferences.getString("curr", findEntrance(allExhibits));
-        Log.d("US5", "loading " + currNode);
+        //List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        //currNode = preferences.getString("curr", findEntrance(allExhibits));
+        /*
+        nextNode = preferences.getString("next", "");
+
+        String[] unvisitedS = preferences.getString("unvisited", "").split(",");
+        String[] exhibitS = preferences.getString("exhibits", "").split(",");
+        String[] visitedS = preferences.getString("visited", "").split(",");
+        String[] tempS = preferences.getString("tempVisited", "").split(",");
+
+        unvisited = new ArrayList<ExhibitItem>();
+        for (String s : unvisitedS) {
+            unvisited.add(findExhibitById(s));
+        }
+
+        exhibits = new ArrayList<ExhibitItem>();
+        for (String s : exhibitS) {
+            exhibits.add(findExhibitById(s));
+        }
+
+        visited = new Stack<ExhibitItem>();
+        for (int i = visitedS.length - 1; i <= 0; i++)
+            visited.push(findExhibitById(visitedS[i]));
+
+        tempVisited = new HashSet<String>();
+        for (String s : tempS) {
+            tempVisited.add(findExhibitById(s).toString());
+        }
+
+
+         */
+        //Log.d("US5", "loading " + currNode);
     }
 
     public void recreateRoute() {
@@ -126,19 +482,35 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 
         while (!currNode.equals(target)) {
-            calcNextStep();
+            calcNextStep();  // handle all the visited data
         }
+
         Log.d("US5", "done recreating w/" + currNode);
     }
 
     public void saveProfile() {
-        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        //SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putString("curr", currNode);
-        Log.d("US5", "saving " + currNode);
+        SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = mPrefs.edit();
+        editor2.putString("activity", "route");
+        editor2.apply();
+        Log.d("activitystart", mPrefs.getString("activity", "why"));
 
-        editor.apply();
+        //editor.putString("curr", currNode);
+        //Log.d("US5", "saving " + currNode);
+        /*
+        editor.putString("next", nextNode);
+
+        editor.putString("exhibits", Converters.idToString(exhibits));
+        editor.putString("unvisited", Converters.idToString(unvisited));
+
+        editor.putString("visited", Converters.idToString(visited));
+        editor.putString("tempVisited", Converters.idToString(tempVisited));
+         */
+
+        //editor.apply();
     }
 
     /**
@@ -149,86 +521,75 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
-        for (int i = 0; i < exhibits.size(); i++) {
-            if (currNode.equals(exhibits.get(i).id)) {
-                visited.push(exhibits.get(i));
-            }
-        }
+        nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
+        tempVisited.add(nextNode);
 
-
-        nextNode = findNearestNeighbor(g, currNode, unvisited);
-
-        Log.d("nextNode", nextNode);
-
+        // Log.d("nextNode", nextNode);
         if (nextNode.equals("")) return false;
 
-
-        currPath = findCurrPath(currNode, nextNode, exhibits);
-
-        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
-
-
-        // Remove from array once visited, no need to visit again
-        for (int i = 0; i < unvisited.size(); i++) {
-            if (currNode.equals(unvisited.get(i).id)) {
-                unvisited.remove(i);
-            }
+        if(SettingsPage.getRouteType()){
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+        } else {
+            currPath = findCurrPathBrief(currNode, nextNode, exhibits);
         }
 
-        Log.d("calcNextStepStack()", visited.toString());
-        saveProfile();
 
-        currNode = nextNode;
-//        if (!isAtEntrance)
-//        else {
-//            isAtEntrance = false;
-//        }
 
         return true;
     }
 
+    /**
+     * @description: method for finding current path for brief dir
+     */
+    public List<String> findCurrPathBrief(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        int sum = 0;
+        String sourceName = null;
+        String targetName = null;
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+            sum += g.getEdgeWeight(edge);
+        }
+        String pathString = String.format("Walk %s meters from %s to %s.", sum, sourceName, targetName);
+        Log.d("path", pathString);
+        currPath.add(pathString);
+        return currPath;
+    }
+
+    /**
+     * @description: Logic for when user clicks previous
+     */
     public boolean calcPrevStep() {
         if (visited == null || visited.size() <= 0) {
             return false;
         }
 
 
-        for (int i = 0; i < exhibits.size(); i++) {
-            if (currNode.equals(exhibits.get(i).id)) {
-                unvisited.add(exhibits.get(i));
-            }
-        }
+        ExhibitItem poppedExhibit = visited.pop();
+        nextNode = poppedExhibit.id;
+        currInvertedPath = findCurrPath(currNode, nextNode, exhibits);
 
 
-        String prevNode = visited.peek().id;
-        if (prevNode.equals(currNode)) {
-            if (visited.size() == 1) {
-                return false;
-            }
-            visited.pop();
-            prevNode = visited.peek().id;
-        }
-        currInvertedPath = findCurrPath(currNode, prevNode, exhibits);
-
-        Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
-        visited.pop();
-
-
-
-        nextNode = currNode;
-        currNode = prevNode;
-
-        saveProfile();
-
-        // Remove from array once visited, no need to visit again
         return true;
     }
 
+    /**
+     * @description: Finds our current path with detailed directions
+     */
     public List<String> findCurrPath(String currNode, String nextNode, List<ExhibitItem> exhibits) {
 
         List<String> currPath = new ArrayList<>();
         path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
-        String from = getNameFromID(currNode, exhibits);
+        String from = getNameFromID(currNode, allExhibits);
         if (from.equals("")) from = "Entrance and Exit Gate";
 
         /**
@@ -270,7 +631,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         return "" + pathDist;
     }
-
     /**
      * @description: Loads in graph data from ZooData helper functions
      */
@@ -313,11 +673,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * @description: Algo to find nearest neighbor given a node in our graph
      */
     public static String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
-                                           List<ExhibitItem> exhibits ) {
+                                           List<ExhibitItem> exhibits , Set<String> tempVisited) {
         String nearestNeighbor = "";
         double shortestTotalPathWeight = Double.MAX_VALUE;
 
         for (int i = 0; i < exhibits.size(); i++) {
+            if (tempVisited.contains(exhibits.get(i).id)) {
+                continue;
+            }
 //            Log.d("RouteDirectionsActivity.java", start + ", " + exhibits.get(i).id);
             GraphPath<String, IdentifiedWeightedEdge> currPath = DijkstraShortestPath.findPathBetween(g, start, exhibits.get(i).id);
             if (currPath.getLength() > 0) {
@@ -363,6 +726,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             for (int i = 0; i < currInvertedPath.size(); i++) {
                 currInvertedPathString += currInvertedPath.get(i);
             }
+            if (currInvertedPathString.equals("")) {
+                currInvertedPathString = "You are at " + currNode;
+            }
             textView.setText(currInvertedPathString);
         }
     }
@@ -390,6 +756,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             for (int i = 0; i < currPath.size(); i++) {
                 currPathString += currPath.get(i);
             }
+            if (currPathString.equals("")) {
+                currPathString = "You are at " + currNode;
+            }
             textView.setText(currPathString);
         }
     }
@@ -408,6 +777,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         for (int i = 0; i < currPath.size(); i++) {
             currPathString += currPath.get(i);
         }
+        if (currPathString.equals("")) {
+            currPathString = "You are at " + currNode;
+        }
         textView.setText(currPathString);
     }
 
@@ -424,8 +796,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         Log.d("nextNode", nextNode);
 
-        currNode = visited.peek().id;
-        nextNode = findNearestNeighbor(g, currNode, unvisited);
+        nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
         Log.d("calcSkipStep()", "from " + currNode + " to " + nextNode);
@@ -453,8 +824,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         Coord updatedCoords = new Coord(coordLat, coordLong);
         mockLocation(updatedCoords);
-
-        model.getLastKnownCoords().observe(this, (coord) -> Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord)));
     }
 
     /**
