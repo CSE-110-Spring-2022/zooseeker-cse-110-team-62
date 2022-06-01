@@ -19,5 +19,6 @@ public class ExitActivity extends AppCompatActivity {
     public void onHomeClicked(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
+        finish();
     }
 }

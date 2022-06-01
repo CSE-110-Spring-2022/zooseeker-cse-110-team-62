@@ -93,13 +93,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         visited = new Stack<>();
         //currNode = findEntrance(allExhibits);
+
         loadProfile();
 
         // if the currNode isn't the entrance upon restarting the app,
         // bring us back to where we were in the directions last time.
         if (currNode != findEntrance(allExhibits))
             recreateRoute();
-
 
         calcNextStep();
 
@@ -113,29 +113,30 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
         currNode = preferences.getString("curr", findEntrance(allExhibits));
-        Log.d("working", currNode);
+        Log.d("US5", "loading " + currNode);
     }
 
     public void recreateRoute() {
         SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
         List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
         String target = preferences.getString("curr", findEntrance(allExhibits));
+        currNode = findEntrance(allExhibits);
+
+        Log.d("US5", "recreating route w/ " + currNode);
 
 
         while (!currNode.equals(target)) {
-
             calcNextStep();
         }
+        Log.d("US5", "done recreating w/" + currNode);
     }
 
     public void saveProfile() {
         SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
-
         editor.putString("curr", currNode);
-        Log.d("saving", currNode);
-
+        Log.d("US5", "saving " + currNode);
 
         editor.apply();
     }
@@ -173,13 +174,16 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 unvisited.remove(i);
             }
         }
+
+        Log.d("calcNextStepStack()", visited.toString());
+        saveProfile();
+
         currNode = nextNode;
 //        if (!isAtEntrance)
 //        else {
 //            isAtEntrance = false;
 //        }
-        Log.d("calcNextStepStack()", visited.toString());
-        saveProfile();
+
         return true;
     }
 
@@ -209,10 +213,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         Log.d("calcPrevStep()", "from " + currNode + " to " + prevNode);
         visited.pop();
 
+
+
         nextNode = currNode;
         currNode = prevNode;
 
         saveProfile();
+
         // Remove from array once visited, no need to visit again
         return true;
     }
@@ -367,6 +374,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     public void onNextClick(View view) {
 
         if (!calcNextStep()){
+            SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+
+            List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+            Log.d("reset", findEntrance(allExhibits));
+            editor.putString("curr", findEntrance(allExhibits));
+            editor.apply();
+
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
         } else {
