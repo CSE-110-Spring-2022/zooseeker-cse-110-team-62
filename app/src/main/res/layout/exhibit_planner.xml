@@ -9,8 +9,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/exhibit_items2"
-        android:layout_width="408dp"
-        android:layout_height="500dp"
+        android:layout_width="414dp"
+        android:layout_height="396dp"
         android:layout_marginTop="88dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

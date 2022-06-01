@@ -30,6 +30,8 @@ public class ExhibitAdapter extends RecyclerView.Adapter<ExhibitAdapter.ViewHold
         this.context = context;
     }
 
+    public List<ExhibitItem> getExhibitItems() { return exhibitItems; }
+
     public void setExhibitItems(List<ExhibitItem> newExhibitItems) {
         this.exhibitItems.clear();
         this.exhibitItems = newExhibitItems;

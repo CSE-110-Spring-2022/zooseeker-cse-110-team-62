@@ -67,4 +67,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.089" />
+
+    <Button
+        android:id="@+id/erase_plan"
+        android:layout_width="65dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="35dp"
+        android:text="Clear"
+        android:textSize="9sp"
+        android:onClick="onClearClicked"
+        app:layout_constraintBottom_toTopOf="@+id/exhibit_items"
+        app:layout_constraintEnd_toStartOf="@+id/plan_text"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.zooseeker_t62;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -72,7 +73,9 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.route_directions);
 
+
         model = new ViewModelProvider(this).get(LocationModel.class);
+
         exhibits = getPlannerExhibits();
 
         loadGraphData();
@@ -121,6 +124,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         for (ExhibitItem item : exhibits) {
             unvisited.add(item);
         }
+
     }
     /**
      * @description: Adds entrance node to visited and removes from unvisited
@@ -431,6 +435,91 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     }
 
     /**
+     * @description: Loads user's preference profile
+     */
+    public void loadProfile() {
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+
+
+        //List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        //currNode = preferences.getString("curr", findEntrance(allExhibits));
+        /*
+        nextNode = preferences.getString("next", "");
+
+        String[] unvisitedS = preferences.getString("unvisited", "").split(",");
+        String[] exhibitS = preferences.getString("exhibits", "").split(",");
+        String[] visitedS = preferences.getString("visited", "").split(",");
+        String[] tempS = preferences.getString("tempVisited", "").split(",");
+
+        unvisited = new ArrayList<ExhibitItem>();
+        for (String s : unvisitedS) {
+            unvisited.add(findExhibitById(s));
+        }
+
+        exhibits = new ArrayList<ExhibitItem>();
+        for (String s : exhibitS) {
+            exhibits.add(findExhibitById(s));
+        }
+
+        visited = new Stack<ExhibitItem>();
+        for (int i = visitedS.length - 1; i <= 0; i++)
+            visited.push(findExhibitById(visitedS[i]));
+
+        tempVisited = new HashSet<String>();
+        for (String s : tempS) {
+            tempVisited.add(findExhibitById(s).toString());
+        }
+
+
+         */
+        //Log.d("US5", "loading " + currNode);
+    }
+
+    public void recreateRoute() {
+        SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+        String target = preferences.getString("curr", findEntrance(allExhibits));
+        currNode = findEntrance(allExhibits);
+
+        Log.d("US5", "recreating route w/ " + currNode);
+
+
+        while (!currNode.equals(target)) {
+            calcNextStep();  // handle all the visited data
+        }
+
+        Log.d("US5", "done recreating w/" + currNode);
+    }
+
+    /**
+     * @description: Code to save user Profile in preferences
+     */
+    public void saveProfile() {
+        //SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+        //SharedPreferences.Editor editor = preferences.edit();
+
+        SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = mPrefs.edit();
+        editor2.putString("activity", "route");
+        editor2.apply();
+        Log.d("activitystart", mPrefs.getString("activity", "why"));
+
+        //editor.putString("curr", currNode);
+        //Log.d("US5", "saving " + currNode);
+        /*
+        editor.putString("next", nextNode);
+
+        editor.putString("exhibits", Converters.idToString(exhibits));
+        editor.putString("unvisited", Converters.idToString(unvisited));
+
+        editor.putString("visited", Converters.idToString(visited));
+        editor.putString("tempVisited", Converters.idToString(tempVisited));
+         */
+
+        //editor.apply();
+    }
+
+    /**
      * @description: When user clicks next these things happen:
      */
     public boolean calcNextStep() {
@@ -450,8 +539,8 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             currPath = findCurrPathBrief(currNode, nextNode, exhibits);
         }
 
-        // Log.d("calcNextStep()", "nextNode: " + nextNode);
 
+        saveProfile();
         return true;
     }
 
@@ -495,9 +584,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         nextNode = poppedExhibit.id;
         currInvertedPath = findCurrPath(currNode, nextNode, exhibits);
 
-        // Log.d("calcPrevStep()", "from " + currNode + " to " + nextNode);
-        // Log.d("calcPrevStep()", "visited: " + visited.toString());
-        // Log.d("calcPrevStep()", "unvisited: " + unvisited.toString());
+        saveProfile();
         return true;
     }
 
@@ -659,6 +746,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     public void onNextClick(View view) {
 
         if (!calcNextStep()){
+            SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+
+            List<ExhibitItem> allExhibits = ExhibitItem.loadJSON(this, "sample_ms2_exhibit_info.json");
+            Log.d("reset", findEntrance(allExhibits));
+            editor.putString("curr", findEntrance(allExhibits));
+            editor.apply();
+
             Intent intent = new Intent(this, ExitActivity.class);
             startActivity(intent);
         } else {
@@ -705,6 +800,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 unvisited.remove(i);
             }
         }
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (exhibits.get(i).id.equals(nextNode)) {
+                viewModel.deleteExhibit(exhibits.get(i));
+                exhibits.remove(i);
+            }
+        }
+
         Log.d("nextNode", nextNode);
 
         nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
@@ -713,6 +815,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         Log.d("calcSkipStep()", "from " + currNode + " to " + nextNode);
         Log.d("unvistedInSkipStep", unvisited.toString());
 
+        saveProfile();
         return true;
     }
 
@@ -742,6 +845,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        saveProfile();
     }
 
     @VisibleForTesting
