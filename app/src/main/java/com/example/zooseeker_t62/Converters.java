@@ -3,6 +3,7 @@ package com.example.zooseeker_t62;
 import androidx.room.TypeConverter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @description: Class with methods to convert a String[] array to
@@ -15,7 +16,7 @@ public class Converters {
      * comma-separated string containing all elements from the array
      */
     @TypeConverter
-    public String fromArray(String[] strings) {
+    public static String fromArray(String[] strings) {
         String string = "";
 
         for(String s : strings) string += (s + ",");
@@ -28,9 +29,18 @@ public class Converters {
      * a String[] array storing the strings separately.
      */
     @TypeConverter
-    public String[] toArray(String concatenatedStrings) {
+    public static String[] toArray(String concatenatedStrings) {
         ArrayList<String> myStrings = new ArrayList<>();
 
         return concatenatedStrings.split(",");
     }
+
+    public static String fromList(String[] strings) {
+        String string = "";
+
+        for(String s : strings) string += (s + ",");
+
+        return string;
+    }
+
 }

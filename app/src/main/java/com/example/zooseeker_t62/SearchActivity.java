@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +40,11 @@ public class SearchActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(ExhibitViewModel.class);
         initRecyclerView();
+
+        SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = mPrefs.edit();
+        editor2.putString("activity", "search");
+        editor2.apply();
     }
 
     /**

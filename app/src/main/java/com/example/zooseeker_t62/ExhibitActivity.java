@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,11 @@ public class ExhibitActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         viewModel.getExhibitItems().observe(this, adapter::setExhibitItems);
         adapter.setExhibitCount(text);
+
+        SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = mPrefs.edit();
+        editor2.putString("activity", "exhibit");
+        editor2.apply();
     }
 
     public String loadGraphString() throws IOException {

@@ -28,7 +28,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         if (str.equals("route")) {
             intent = new Intent(this, RouteDirectionsActivity.class);
-        } else {
+        }
+        else if (str.equals("exhibit"))
+            intent = new Intent(this, ExhibitActivity.class);
+        else if (str.equals("search"))
+            intent = new Intent(this, SearchActivity.class);
+        else {
             intent = new Intent(this, SearchActivity.class);
         }
 
