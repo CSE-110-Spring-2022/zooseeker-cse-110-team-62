@@ -9,10 +9,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.jgrapht.Graph;
@@ -29,6 +34,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +48,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class RouteDirectionsActivity extends AppCompatActivity {
     public ExhibitViewModel viewModel;
-
-    private static String YOU_ARE_HERE = "You are here!";
 
     private int pathIdx;
     private java.util.Locale Locale;
@@ -69,8 +73,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private ExhibitItem closestExhibit;
     private List<ExhibitItem> allExhibits;
     private ExhibitItem nearestNodeByLocation;
-
-
+    private Set<String> tempVisited;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +97,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
         unvisited = new ArrayList<>();
         visited = new Stack<>();
+        tempVisited = new HashSet<>();
 
         for (int i = 0; i < allExhibits.size(); i++) {
             if (allExhibits.get(i).kind.equals("gate")) {
@@ -167,7 +171,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             }
 
             if (currPathString.equals("")) {
-                currPathString = YOU_ARE_HERE;
+                currPathString = "You are at " + currNode;
                 ExhibitItem currExhibit = findExhibitById(currNode);
                 boolean inUnvisited = false;
                 for (int i = 0; i < unvisited.size(); i++) {
@@ -204,6 +208,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         model.getLastKnownCoords().observe(this, (coord) -> {
             Log.i("onCoordUpdateClick", String.format("Observing location model update to %s", coord));
 
+            tempVisited.clear();
             updateCurrent(coord);
 
             Log.d("updateUserLocation", "unvisited: " + unvisited.toString());
@@ -355,7 +360,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                     }
                     visited.push(exhibit);
 
-                    currPathString = YOU_ARE_HERE;
+                    currPathString =  "You are at " + currNode;
                 }
                 else {
                     currNode = nearestNode;
@@ -391,7 +396,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                         }
                     }
                     visited.push(exhibit);
-                    currPathString = YOU_ARE_HERE;
+                    currPathString = "You are at " + currNode;
                 }
                 else {
                     currNode = nearestNode;
@@ -421,7 +426,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                         }
                     }
                     visited.push(exhibit);
-                    currPathString = YOU_ARE_HERE;
+                    currPathString = "You are at " + currNode;
                 }
                 else {
                     currNode = nearestNode;
@@ -485,14 +490,21 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             return false;
         }
 
-        if (nextNode != null) {
-            prevNextNode = nextNode;
-        }
-        String oldNextNode = nextNode;
-        nextNode = findNearestNeighbor(g, currNode, unvisited);
+        nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
+        tempVisited.add(nextNode);
+
+
+
+
+
         Log.d("nextNode", nextNode);
         if (nextNode.equals("")) return false;
 
+        if(SettingsPage.getRouteType()){
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+        } else {
+            currPath = findCurrPathBrief(currNode, nextNode, exhibits);
+        }
         /*if (oldNextNode != null && oldNextNode.equals(nextNode)) {
             ExhibitItem oldNextExhibit = findExhibitById(oldNextNode);
             for (int i = 0; i < unvisited.size(); i++) {
@@ -505,8 +517,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             unvisited.add(oldNextExhibit);
         }*/
 
-        currPath = findCurrPath(currNode, nextNode, exhibits);
-
 //        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
         saveProfile();
@@ -516,16 +526,35 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return true;
     }
 
+    public List<String> findCurrPathBrief(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        int sum = 0;
+        String sourceName = null;
+        String targetName = null;
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+            sum += g.getEdgeWeight(edge);
+        }
+        String pathString = String.format("Walk %s meters from %s to %s.", sum, sourceName, targetName);
+        Log.d("path", pathString);
+        currPath.add(pathString);
+        return currPath;
+    }
+
     public boolean calcPrevStep() {
         if (visited == null || visited.size() <= 0) {
             return false;
         }
 
-        /*if (visited.size() == 1) {
-            if (visited.peek().kind.equals("gate")) {
-                return false;
-            }
-        }*/
 
         ExhibitItem poppedExhibit = visited.pop();
         nextNode = poppedExhibit.id;
@@ -632,11 +661,14 @@ public class RouteDirectionsActivity extends AppCompatActivity {
      * @description: Algo to find nearest neighbor given a node in our graph
      */
     public static String findNearestNeighbor(Graph<String, IdentifiedWeightedEdge> g, String start,
-                                           List<ExhibitItem> exhibits ) {
+                                           List<ExhibitItem> exhibits , Set<String> tempVisited) {
         String nearestNeighbor = "";
         double shortestTotalPathWeight = Double.MAX_VALUE;
 
         for (int i = 0; i < exhibits.size(); i++) {
+            if (tempVisited.contains(exhibits.get(i).id)) {
+                continue;
+            }
 //            Log.d("RouteDirectionsActivity.java", start + ", " + exhibits.get(i).id);
             GraphPath<String, IdentifiedWeightedEdge> currPath = DijkstraShortestPath.findPathBetween(g, start, exhibits.get(i).id);
             if (currPath.getLength() > 0) {
@@ -683,7 +715,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 currInvertedPathString += currInvertedPath.get(i);
             }
             if (currInvertedPathString.equals("")) {
-                currInvertedPathString = YOU_ARE_HERE;
+                currInvertedPathString = "You are at " + currNode;
             }
             textView.setText(currInvertedPathString);
         }
@@ -713,7 +745,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 currPathString += currPath.get(i);
             }
             if (currPathString.equals("")) {
-                currPathString = YOU_ARE_HERE;
+                currPathString = "You are at " + currNode;
             }
             textView.setText(currPathString);
         }
@@ -734,7 +766,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             currPathString += currPath.get(i);
         }
         if (currPathString.equals("")) {
-            currPathString = YOU_ARE_HERE;
+            currPathString = "You are at " + currNode;
         }
         textView.setText(currPathString);
     }
@@ -752,7 +784,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
         Log.d("nextNode", nextNode);
 
-        nextNode = findNearestNeighbor(g, currNode, unvisited);
+        nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
         currPath = findCurrPath(currNode, nextNode, exhibits);
 
         Log.d("calcSkipStep()", "from " + currNode + " to " + nextNode);

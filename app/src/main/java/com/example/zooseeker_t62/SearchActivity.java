@@ -13,6 +13,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SearchView;
 
 import java.util.List;
@@ -26,6 +31,7 @@ public class SearchActivity extends AppCompatActivity {
     private SearchAdapter adapter;
     private List<ExhibitItem> searchList;
     public ExhibitViewModel viewModel;
+
     /**
      * @description: loadsSearchList Data --> creates viewModel --> creates recycler view
      */
@@ -45,6 +51,16 @@ public class SearchActivity extends AppCompatActivity {
         SharedPreferences.Editor editor2 = mPrefs.edit();
         editor2.putString("activity", "search");
         editor2.apply();
+
+        Button settings = (Button) findViewById(R.id.settings_button);
+        settings.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(SearchActivity.this, SettingsPage.class);
+                startActivity(settingsIntent);
+            }
+        });
+
     }
 
     /**
@@ -108,4 +124,5 @@ public class SearchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }
