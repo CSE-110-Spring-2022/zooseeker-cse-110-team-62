@@ -534,7 +534,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         }
 
 
-
+        saveProfile();
         return true;
     }
 
@@ -578,7 +578,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         nextNode = poppedExhibit.id;
         currInvertedPath = findCurrPath(currNode, nextNode, exhibits);
 
-
+        saveProfile();
         return true;
     }
 
