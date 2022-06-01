@@ -800,6 +800,13 @@ public class RouteDirectionsActivity extends AppCompatActivity {
                 unvisited.remove(i);
             }
         }
+        for (int i = 0; i < exhibits.size(); i++) {
+            if (exhibits.get(i).id.equals(nextNode)) {
+                viewModel.deleteExhibit(exhibits.get(i));
+                exhibits.remove(i);
+            }
+        }
+
         Log.d("nextNode", nextNode);
 
         nextNode = findNearestNeighbor(g, currNode, unvisited, tempVisited);
