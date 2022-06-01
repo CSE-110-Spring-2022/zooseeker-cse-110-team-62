@@ -3,7 +3,9 @@ package com.example.zooseeker_t62;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -18,7 +20,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, SearchActivity.class);
+
+        SharedPreferences mPrefs = getSharedPreferences("IDvalue", MODE_PRIVATE);
+        String str = mPrefs.getString("activity", "");
+
+
+        Intent intent;
+        if (str.equals("route")) {
+            intent = new Intent(this, RouteDirectionsActivity.class);
+        } else {
+            intent = new Intent(this, SearchActivity.class);
+        }
+
+        Log.d("activitystart", "act:" + str);
+
+
         startActivity(intent);
     }
 }

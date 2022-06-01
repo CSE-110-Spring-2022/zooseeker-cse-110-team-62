@@ -126,14 +126,21 @@ public class RouteDirectionsActivity extends AppCompatActivity {
 
 
         while (!currNode.equals(target)) {
-            calcNextStep();
+            calcNextStep();  // hanle all the visited data
         }
+
         Log.d("US5", "done recreating w/" + currNode);
     }
 
     public void saveProfile() {
         SharedPreferences preferences = this.getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+
+        SharedPreferences mPrefs = this.getSharedPreferences("IDvalue", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = mPrefs.edit();
+        editor.putString("activity", "route");
+        editor.apply();
+        Log.d("activitystart", mPrefs.getString("activity", "why"));
 
         editor.putString("curr", currNode);
         Log.d("US5", "saving " + currNode);
