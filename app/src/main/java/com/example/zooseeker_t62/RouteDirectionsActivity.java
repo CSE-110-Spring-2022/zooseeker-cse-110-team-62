@@ -8,10 +8,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,9 +72,7 @@ public class RouteDirectionsActivity extends AppCompatActivity {
     private ExhibitItem closestExhibit;
     private List<ExhibitItem> allExhibits;
     private ExhibitItem nearestNodeByLocation;
-
     private Set<String> tempVisited;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -448,6 +450,11 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         Log.d("nextNode", nextNode);
         if (nextNode.equals("")) return false;
 
+        if(SettingsPage.getRouteType()){
+            currPath = findCurrPath(currNode, nextNode, exhibits);
+        } else {
+            currPath = findCurrPathBrief(currNode, nextNode, exhibits);
+        }
         /*if (oldNextNode != null && oldNextNode.equals(nextNode)) {
             ExhibitItem oldNextExhibit = findExhibitById(oldNextNode);
             for (int i = 0; i < unvisited.size(); i++) {
@@ -460,8 +467,6 @@ public class RouteDirectionsActivity extends AppCompatActivity {
             unvisited.add(oldNextExhibit);
         }*/
 
-        currPath = findCurrPath(currNode, nextNode, exhibits);
-
 //        Log.d("calcNextStep()", "from " + currNode + " to " + nextNode + ": calcNextstep()");
 
         Log.d("calcNextStep()", "nextNode: " + nextNode);
@@ -469,16 +474,35 @@ public class RouteDirectionsActivity extends AppCompatActivity {
         return true;
     }
 
+    public List<String> findCurrPathBrief(String currNode, String nextNode, List<ExhibitItem> exhibits) {
+        List<String> currPath = new ArrayList<>();
+        path = DijkstraShortestPath.findPathBetween(g, currNode, nextNode);
+        String from = getNameFromID(currNode, exhibits);
+        if (from.equals("")) from = "Entrance and Exit Gate";
+
+        /**
+         *  Builds path BETWEEN two nodes, namely the start and end node where end is the closest
+         *  unvisited node from the start
+         */
+        int sum = 0;
+        String sourceName = null;
+        String targetName = null;
+        for (IdentifiedWeightedEdge edge : path.getEdgeList()) {
+            sourceName = vInfo.get(g.getEdgeSource(edge).toString()).name;
+            targetName = vInfo.get(g.getEdgeTarget(edge).toString()).name;
+            sum += g.getEdgeWeight(edge);
+        }
+        String pathString = String.format("Walk %s meters from %s to %s.", sum, sourceName, targetName);
+        Log.d("path", pathString);
+        currPath.add(pathString);
+        return currPath;
+    }
+
     public boolean calcPrevStep() {
         if (visited == null || visited.size() <= 0) {
             return false;
         }
 
-        /*if (visited.size() == 1) {
-            if (visited.peek().kind.equals("gate")) {
-                return false;
-            }
-        }*/
 
         ExhibitItem poppedExhibit = visited.pop();
         nextNode = poppedExhibit.id;
